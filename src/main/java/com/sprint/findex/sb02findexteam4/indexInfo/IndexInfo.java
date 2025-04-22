@@ -14,7 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SourceType;
 
 @Entity
 @Table(
@@ -47,7 +46,7 @@ public class IndexInfo {
   private Double baseIndex;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "source_type", nullable = false)
+  @Column(name = "source_type", columnDefinition = "source_type", nullable = false)
   private SourceType sourceType;
 
   @Column(name = "favorite", nullable = false)
