@@ -15,20 +15,4 @@ public class GlobalExceptionHandler {
                 .status(errorCode.getHttpStatus())
                 .body(errorCode.getMessage());
     }
-
-    @ExceptionHandler(StorageException.class)
-    public ResponseEntity<String> handleLogicException(StorageException e) {
-        ErrorCode errorCode = e.getErrorCode();
-        return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(errorCode.getMessage());
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception e) {
-        e.printStackTrace();
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ErrorCode.INTERNAL_SERVER_ERROR.getMessage());
-    }
 }
