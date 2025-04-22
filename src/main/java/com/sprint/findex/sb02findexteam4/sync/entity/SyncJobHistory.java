@@ -1,57 +1,66 @@
 package com.sprint.findex.sb02findexteam4.sync.entity;
 
-import jakarta.persistence.*;
+import com.sprint.findex.sb02findexteam4.indexInfo.IndexInfo;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import java.time.Instant;
 import jdk.jfr.Timestamp;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.Instant;
 
 @Getter
 @NoArgsConstructor
 @Table(name = "sync_job_history")
 @Entity
 public class SyncJobHistory {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "job_type", columnDefinition = "job_type", nullable = false)
-    private JobType jobType;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "job_type", columnDefinition = "job_type", nullable = false)
+  private JobType jobType;
 
-//  @ManyToOne
-// @JoinColumn(name = "index_info_id")
-//    private IndexInfo indexInfo;
+  @ManyToOne
+  @JoinColumn(name = "index_info_id")
+  private IndexInfo indexInfo;
 
-    @Timestamp
-    @Column(name = "target_date", nullable = false)
-    private Instant targetDate;
+  @Timestamp
+  @Column(name = "target_date", nullable = false)
+  private Instant targetDate;
 
-    @Column(name = "worker",nullable = false)
-    private String worker;
+  @Column(name = "worker",nullable = false)
+  private String worker;
 
-    @Timestamp
-    @Column(name = "job_time",nullable = false)
-    private Instant jobTime;
+  @Timestamp
+  @Column(name = "job_time",nullable = false)
+  private Instant jobTime;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "result", columnDefinition = "job_result", nullable = false)
-    private JobResult jobResult;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "result", columnDefinition = "job_result", nullable = false)
+  private JobResult jobResult;
 
-    /*
-    private SyncJobHistory(JobType jobType, IndexInfo indexinfo, Instant targetDate, String worker, Instant jobTime, JobResult jobResult) {
+
+    private SyncJobHistory(JobType jobType, IndexInfo indexInfo, Instant targetDate, String worker, Instant jobTime, JobResult jobResult) {
         this.jobType = jobType;
-        this.indexinfo = indexinfo;
+        this.indexInfo = indexInfo;
         this.targetDate = targetDate;
         this.worker = worker;
         this.jobTime = jobTime;
         this.jobResult = jobResult;
     }
 
-    public static SyncJobHistory create(JobType jobType, IndexInfo indexinfo, Instant targetDate, String worker, Instant jobTime, JobResult jobResult) {
-        return new SyncJobHistory(jobType, indexinfo,targetDate, worker, jobTime, jobResult);
+    public static SyncJobHistory create(JobType jobType, IndexInfo indexInfo, Instant targetDate, String worker, Instant jobTime, JobResult jobResult) {
+        return new SyncJobHistory(jobType, indexInfo,targetDate, worker, jobTime, jobResult);
     }
 
-     */
+
 }
