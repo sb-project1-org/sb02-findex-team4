@@ -5,7 +5,7 @@ import com.sprint.findex.sb02findexteam4.indexInfo.SourceType;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-public record IndexDataCreateResponse(
+public record IndexDataResponse(
     Long id,
     Long indexInfoId,
     Instant baseDate,
@@ -20,8 +20,8 @@ public record IndexDataCreateResponse(
     Long tradingPrice,
     Long marketTotalAmount
 ) {
-  public static IndexDataCreateResponse from(IndexData entity) {
-    return new IndexDataCreateResponse(
+  public static IndexDataResponse from(IndexData entity) {
+    return new IndexDataResponse(
         entity.getId(),
         entity.getIndexInfo().getId(),
         entity.getBaseDate(),

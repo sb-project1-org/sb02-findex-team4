@@ -6,7 +6,7 @@ import static com.sprint.findex.sb02findexteam4.exception.ErrorCode.INDEX_INFO_N
 import com.sprint.findex.sb02findexteam4.exception.AlreadyExistsException;
 import com.sprint.findex.sb02findexteam4.exception.NotFoundException;
 import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataCreateRequest;
-import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataCreateResponse;
+import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataResponse;
 import com.sprint.findex.sb02findexteam4.indexData.IndexData;
 import com.sprint.findex.sb02findexteam4.indexData.repository.IndexDataRepository;
 import com.sprint.findex.sb02findexteam4.indexInfo.IndexInfo;
@@ -25,7 +25,7 @@ public class BasicIndexDataService implements IndexDataService {
 
   @Transactional
   @Override
-  public IndexDataCreateResponse create(IndexDataCreateRequest request, SourceType sourceType){
+  public IndexDataResponse create(IndexDataCreateRequest request, SourceType sourceType){
     IndexInfo indexInfo = indexInfoRepository.findById(request.indexInfoId())
         .orElseThrow(() -> new NotFoundException(INDEX_INFO_NOT_FOUND));
 
@@ -35,7 +35,7 @@ public class BasicIndexDataService implements IndexDataService {
 
     IndexData indexData = IndexData.of(request, indexInfo, sourceType);
     IndexData createdIndexData = indexDataRepository.save(indexData);
-    return IndexDataCreateResponse.from(createdIndexData);
+    return IndexDataResponse.from(createdIndexData);
   }
 
   @Override
