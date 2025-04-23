@@ -1,5 +1,6 @@
-package com.sprint.findex.sb02findexteam4.indexInfo;
+package com.sprint.findex.sb02findexteam4.indexInfo.entity;
 
+import com.sprint.findex.sb02findexteam4.indexInfo.dto.IndexInfoCreateRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,7 +22,6 @@ import lombok.Setter;
     uniqueConstraints = @UniqueConstraint (columnNames = {"index_classification", "index_name"})
 )
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class IndexInfo {
@@ -51,4 +51,28 @@ public class IndexInfo {
 
   @Column(name = "favorite", nullable = false)
   private Boolean favorite;
+
+  public IndexInfo(String indexClassification, String indexName, Integer employedItemsCount,
+      Instant basePointInTime, Double baseIndex, SourceType sourceType, Boolean favorite) {
+    this.indexClassification = indexClassification;
+    this.indexName = indexName;
+    this.employedItemsCount = employedItemsCount;
+    this.basePointInTime = basePointInTime;
+    this.baseIndex = baseIndex;
+    this.sourceType = sourceType;
+    this.favorite = favorite;
+  }
+
+  public static IndexInfo create(IndexInfoCreateRequestDto dto) {
+    return new IndexInfo(
+        null,
+        dto.indexClassification(),
+        dto.indexName(),
+        dto.employedItemsCount(),
+        dto.basePointInTime(),
+        dto.baseIndex(),
+        SourceType.USER,
+        dto.favorite()
+    );
+  }
 }
