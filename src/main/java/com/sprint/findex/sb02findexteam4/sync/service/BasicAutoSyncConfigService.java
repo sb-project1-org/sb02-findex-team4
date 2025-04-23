@@ -87,31 +87,6 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
   }
 
   @Override
-  @Transactional
-  public void deleteById(Long id) {
-    try {
-      autoSyncConfigRepository.deleteById(id);
-    } catch (IllegalArgumentException e) {
-      throw new NotFoundException(ErrorCode.AUTO_SYNC_NOT_FOUND);
-    } catch (RuntimeException e) {
-      throw new SystemException(ErrorCode.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  @Override
-  @Transactional
-  public void deleteByIndexInfoId(Long indexInfoId) {
-    try {
-      autoSyncConfigRepository.deleteByIndexInfo_Id(indexInfoId);
-    } catch (IllegalArgumentException e) {
-      throw new NotFoundException(ErrorCode.AUTO_SYNC_NOT_FOUND);
-    } catch (RuntimeException e) {
-      throw new SystemException(ErrorCode.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  @Override
-  @Transactional(readOnly = true)
   public CursorPageResponseAutoSyncConfigDto findAll(AutoSyncConfigFindCommand command) {
     Pageable pageable = createPage(command.sortDirection(), command.sortField(), command.size());
 
@@ -122,7 +97,6 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
   }
 
   @Override
-  @Transactional(readOnly = true)
   public CursorPageResponseAutoSyncConfigDto findAllByInfoId(AutoSyncConfigFindCommand command) {
     Pageable pageable = createPage(command.sortDirection(), command.sortField(), command.size());
     Slice<AutoSyncConfigDto> slice = autoSyncConfigRepository.findAllByIndexInfo_Id(
@@ -132,7 +106,6 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
   }
 
   @Override
-  @Transactional(readOnly = true)
   public CursorPageResponseAutoSyncConfigDto findAllByEnabled(AutoSyncConfigFindCommand command) {
     Pageable pageable = createPage(command.sortDirection(), command.sortField(), command.size());
 
@@ -143,7 +116,6 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
   }
 
   @Override
-  @Transactional(readOnly = true)
   public CursorPageResponseAutoSyncConfigDto findAllByInfoIdAndEnabled(
       AutoSyncConfigFindCommand command) {
     Pageable pageable = createPage(command.sortDirection(), command.sortField(), command.size());
@@ -180,4 +152,28 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
         slice.getSize(), (long) slice.getNumberOfElements(), slice.hasNext());
   }
 
+
+  @Override
+  @Transactional
+  public void deleteById(Long id) {
+    try {
+      autoSyncConfigRepository.deleteById(id);
+    } catch (IllegalArgumentException e) {
+      throw new NotFoundException(ErrorCode.AUTO_SYNC_NOT_FOUND);
+    } catch (RuntimeException e) {
+      throw new SystemException(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Override
+  @Transactional
+  public void deleteByIndexInfoId(Long indexInfoId) {
+    try {
+      autoSyncConfigRepository.deleteByIndexInfo_Id(indexInfoId);
+    } catch (IllegalArgumentException e) {
+      throw new NotFoundException(ErrorCode.AUTO_SYNC_NOT_FOUND);
+    } catch (RuntimeException e) {
+      throw new SystemException(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+  }
 }
