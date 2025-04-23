@@ -2,7 +2,7 @@ package com.sprint.findex.sb02findexteam4.indexData.dto;
 
 import java.math.BigDecimal;
 
-public record IndexDataUpdateDto(
+public record IndexDataUpdateRequest(
     BigDecimal marketPrice,
     BigDecimal closingPrice,
     BigDecimal highPrice,

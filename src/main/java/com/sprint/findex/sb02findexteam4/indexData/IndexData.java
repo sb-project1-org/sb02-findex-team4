@@ -2,7 +2,7 @@ package com.sprint.findex.sb02findexteam4.indexData;
 
 
 import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataCreateRequest;
-import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataUpdateDto;
+import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataUpdateRequest;
 import com.sprint.findex.sb02findexteam4.indexInfo.IndexInfo;
 import com.sprint.findex.sb02findexteam4.indexInfo.SourceType;
 import jakarta.persistence.Column;
@@ -75,7 +75,7 @@ public class IndexData {
   @Column(name = "market_total_amount")
   private Long marketTotalAmount;
 
-  public IndexData update(IndexDataUpdateDto dto) {
+  public IndexData update(IndexDataUpdateRequest dto) {
     this.marketPrice = dto.marketPrice();
     this.closingPrice = dto.closingPrice();
     this.highPrice = dto.highPrice();
