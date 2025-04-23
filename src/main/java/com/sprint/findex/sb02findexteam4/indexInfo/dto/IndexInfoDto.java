@@ -5,7 +5,7 @@ import java.time.Instant;
 
 public record IndexInfoDto(
     Long id,
-    String indexClassification,
+    String indexClassificationName,
     String indexName,
     Integer employedItemsCount,
     Instant basePointInTime,
