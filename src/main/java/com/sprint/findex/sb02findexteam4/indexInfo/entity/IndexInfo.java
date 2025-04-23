@@ -59,11 +59,24 @@ public class IndexInfo {
   }
 
   public void updateFromDto(IndexInfoCreateRequestDto dto) {
-    this.indexClassificationName = dto.indexClassificationName();
-    this.indexName = dto.indexName();
-    this.employedItemsCount = dto.employedItemsCount();
-    this.basePointInTime = dto.basePointInTime();
-    this.baseIndex = dto.baseIndex();
-    this.favorite = dto.favorite();
+    if (dto.indexClassificationName() != null && !dto.indexClassificationName().equals(this.indexClassificationName)) {
+      this.indexClassificationName = dto.indexClassificationName();
+    }
+    if (dto.indexName() != null && !dto.indexName().equals(this.indexName)) {
+      this.indexName = dto.indexName();
+    }
+    if (dto.employedItemsCount() != null && !dto.employedItemsCount().equals(this.employedItemsCount)) {
+      this.employedItemsCount = dto.employedItemsCount();
+    }
+    if (dto.basePointInTime() != null && !dto.basePointInTime().equals(this.basePointInTime)) {
+      this.basePointInTime = dto.basePointInTime();
+    }
+    if (dto.baseIndex() != null && !dto.baseIndex().equals(this.baseIndex)) {
+      this.baseIndex = dto.baseIndex();
+    }
+    if (dto.favorite() != null && !dto.favorite().equals(this.favorite)) {
+      this.favorite = dto.favorite();
+    }
   }
+
 }
