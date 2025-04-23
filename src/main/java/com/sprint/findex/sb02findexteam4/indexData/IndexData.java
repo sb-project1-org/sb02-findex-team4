@@ -1,6 +1,7 @@
 package com.sprint.findex.sb02findexteam4.indexData;
 
 
+import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataUpdateDto;
 import com.sprint.findex.sb02findexteam4.indexInfo.IndexInfo;
 import com.sprint.findex.sb02findexteam4.indexInfo.SourceType;
 import jakarta.persistence.Column;
@@ -14,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.math.BigDecimal;
 import java.time.Instant;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -46,22 +48,22 @@ public class IndexData {
   private SourceType sourceType;
 
   @Column(name = "market_price", precision = 15, scale = 4)
-  private Double marketPrice;
+  private BigDecimal marketPrice;
 
   @Column(name = "closing_price", precision = 15, scale = 4)
-  private Double closingPrice;
+  private BigDecimal closingPrice;
 
   @Column(name = "high_price", precision = 15, scale = 4)
-  private Double highPrice;
+  private BigDecimal highPrice;
 
   @Column(name = "low_price", precision = 15, scale = 4)
-  private Double lowPrice;
+  private BigDecimal lowPrice;
 
   @Column(name = "versus", precision = 15, scale = 4)
-  private Double versus;
+  private BigDecimal versus;
 
   @Column(name = "fluctuation_rate", precision = 15, scale = 4)
-  private Double fluctuationRate;
+  private BigDecimal fluctuationRate;
 
   @Column(name = "trading_quantity")
   private Long tradingQuantity;
@@ -71,4 +73,17 @@ public class IndexData {
 
   @Column(name = "market_total_amount")
   private Long marketTotalAmount;
+
+  public IndexData update(IndexDataUpdateDto dto) {
+    this.marketPrice = dto.marketPrice();
+    this.closingPrice = dto.closingPrice();
+    this.highPrice = dto.highPrice();
+    this.lowPrice = dto.lowPrice();
+    this.versus = dto.versus();
+    this.fluctuationRate = dto.fluctuationRate();
+    this.tradingQuantity = dto.tradingQuantity();
+    this.tradingPrice = dto.tradingPrice();
+    this.marketTotalAmount = dto.marketTotalAmount();
+    return this;
+  }
 }
