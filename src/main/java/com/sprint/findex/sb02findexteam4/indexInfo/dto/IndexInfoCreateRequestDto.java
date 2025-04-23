@@ -3,7 +3,7 @@ package com.sprint.findex.sb02findexteam4.indexInfo.dto;
 import java.time.Instant;
 
 public record IndexInfoCreateRequestDto(
-   String indexClassification,
+   String indexClassificationName,
    String indexName,
    Integer employedItemsCount,
    Instant basePointInTime,
