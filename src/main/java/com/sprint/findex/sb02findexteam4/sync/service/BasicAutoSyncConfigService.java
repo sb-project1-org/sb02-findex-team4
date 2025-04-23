@@ -1,9 +1,11 @@
 package com.sprint.findex.sb02findexteam4.sync.service;
 
+import com.sprint.findex.sb02findexteam4.exception.AlreadyExistsException;
 import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
 import com.sprint.findex.sb02findexteam4.exception.InvalidRequestException;
 import com.sprint.findex.sb02findexteam4.exception.NotFoundException;
 import com.sprint.findex.sb02findexteam4.exception.SystemException;
+import com.sprint.findex.sb02findexteam4.indexInfo.IndexInfo;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigDto;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigUpdateCommand;
 import com.sprint.findex.sb02findexteam4.sync.entity.AutoSyncConfig;
@@ -17,6 +19,43 @@ import org.springframework.transaction.annotation.Transactional;
 public class BasicAutoSyncConfigService implements AutoSyncConfigService {
 
   private final AutoSyncConfigRepository autoSyncConfigRepository;
+
+  @Override
+  @Transactional
+  public AutoSyncConfigDto create(IndexInfo indexInfo) {
+    if (autoSyncConfigRepository.existsByIndexInfo_Id(indexInfo.getId())) {
+      throw new AlreadyExistsException(ErrorCode.AUTO_SYNC_ALREADY_EXISTS);
+    }
+    try {
+
+      AutoSyncConfig autoSyncConfig = AutoSyncConfig.create(indexInfo);
+      autoSyncConfigRepository.save(autoSyncConfig);
+      return AutoSyncConfigDto.of(autoSyncConfig);
+
+    } catch (IllegalArgumentException e) {
+      throw new InvalidRequestException(ErrorCode.AUTO_SYNC_BAD_REQUEST);
+    } catch (RuntimeException e) {
+      throw new SystemException(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Override
+  @Transactional
+  public AutoSyncConfigDto create(IndexInfo indexInfo, boolean enabled) {
+    if (autoSyncConfigRepository.existsByIndexInfo_Id(indexInfo.getId())) {
+      throw new AlreadyExistsException(ErrorCode.AUTO_SYNC_ALREADY_EXISTS);
+    }
+    try {
+      AutoSyncConfig autoSyncConfig = AutoSyncConfig.create(indexInfo, enabled);
+      autoSyncConfigRepository.save(autoSyncConfig);
+      return AutoSyncConfigDto.of(autoSyncConfig);
+
+    } catch (IllegalArgumentException e) {
+      throw new InvalidRequestException(ErrorCode.AUTO_SYNC_BAD_REQUEST);
+    } catch (RuntimeException e) {
+      throw new SystemException(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   @Override
   @Transactional
