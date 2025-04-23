@@ -10,6 +10,7 @@ public interface AutoSyncConfigRepository extends JpaRepository<AutoSyncConfig, 
   boolean existsByIndexInfo_Id(Long indexInfoId);
 
   void deleteByIndexInfo_Id(Long indexInfoId);
+
   Slice<AutoSyncConfig> findAllByIndexInfo_Id(Long indexInfoId, Pageable pageable);
 
   Slice<AutoSyncConfig> findAllByEnabled(boolean enabled, Pageable pageable);
