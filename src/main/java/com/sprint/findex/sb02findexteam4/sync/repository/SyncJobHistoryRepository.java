@@ -1,5 +1,8 @@
 package com.sprint.findex.sb02findexteam4.sync.repository;
 
-public interface SyncJobHistoryRepository {
+import com.sprint.findex.sb02findexteam4.sync.entity.SyncJobHistory;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface SyncJobHistoryRepository extends JpaRepository<SyncJobHistory, Long> {
 
 }
