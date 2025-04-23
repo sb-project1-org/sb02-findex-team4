@@ -4,7 +4,6 @@ import com.sprint.findex.sb02findexteam4.exception.AlreadyExistsException;
 import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
 import com.sprint.findex.sb02findexteam4.exception.InvalidRequestException;
 import com.sprint.findex.sb02findexteam4.exception.NotFoundException;
-import com.sprint.findex.sb02findexteam4.exception.SystemException;
 import com.sprint.findex.sb02findexteam4.indexInfo.IndexInfo;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigDto;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigFindCommand;
@@ -40,8 +39,6 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
 
     } catch (IllegalArgumentException e) {
       throw new InvalidRequestException(ErrorCode.AUTO_SYNC_BAD_REQUEST);
-    } catch (RuntimeException e) {
-      throw new SystemException(ErrorCode.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -58,8 +55,6 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
 
     } catch (IllegalArgumentException e) {
       throw new InvalidRequestException(ErrorCode.AUTO_SYNC_BAD_REQUEST);
-    } catch (RuntimeException e) {
-      throw new SystemException(ErrorCode.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -81,10 +76,6 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
       //예상치 못한 인수가 들어오면 bad request 에러 발생
     } catch (IllegalArgumentException e) {
       throw new InvalidRequestException(ErrorCode.AUTO_SYNC_BAD_REQUEST);
-
-      //시스템이 중간에 뻗는 등이 일이 발생하면 internal server 에러 발생
-    } catch (RuntimeException e) {
-      throw new SystemException(ErrorCode.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -166,8 +157,6 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
       autoSyncConfigRepository.deleteById(id);
     } catch (IllegalArgumentException e) {
       throw new NotFoundException(ErrorCode.AUTO_SYNC_NOT_FOUND);
-    } catch (RuntimeException e) {
-      throw new SystemException(ErrorCode.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -178,8 +167,6 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
       autoSyncConfigRepository.deleteByIndexInfo_Id(indexInfoId);
     } catch (IllegalArgumentException e) {
       throw new NotFoundException(ErrorCode.AUTO_SYNC_NOT_FOUND);
-    } catch (RuntimeException e) {
-      throw new SystemException(ErrorCode.INTERNAL_SERVER_ERROR);
     }
   }
 }
