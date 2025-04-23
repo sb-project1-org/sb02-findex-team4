@@ -12,4 +12,8 @@ public interface AutoSyncConfigService {
 
   AutoSyncConfigDto update(AutoSyncConfigUpdateCommand command);
 
+  void deleteById(Long id);
+
+  void deleteByIndexInfoId(Long indexInfoId);
+
 }
