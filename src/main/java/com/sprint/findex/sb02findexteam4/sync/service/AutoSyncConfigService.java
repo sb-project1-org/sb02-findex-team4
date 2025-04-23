@@ -4,7 +4,7 @@ import com.sprint.findex.sb02findexteam4.indexInfo.IndexInfo;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigDto;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigUpdateCommand;
 
-public interface AutoSyncConfigService {
+public interface AutoSyncConfigService extends AutoSyncConfigFindUseCase {
 
   AutoSyncConfigDto create(IndexInfo indexInfo);
 
