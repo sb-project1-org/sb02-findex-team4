@@ -10,7 +10,7 @@ public class IndexInfoMapper {
   public IndexInfoDto toDto(IndexInfo entity) {
     return new IndexInfoDto(
         entity.getId(),
-        entity.getIndexClassification(),
+        entity.getIndexClassificationName(),
         entity.getIndexName(),
         entity.getEmployedItemsCount(),
         entity.getBasePointInTime(),
