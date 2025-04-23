@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(
     name = "index_info",
-    uniqueConstraints = @UniqueConstraint (columnNames = {"index_classification", "index_name"})
+    uniqueConstraints = @UniqueConstraint(columnNames = {"index_classification", "index_name"})
 )
 @Getter
 @NoArgsConstructor
@@ -51,27 +51,19 @@ public class IndexInfo {
   @Column(name = "favorite", nullable = false)
   private Boolean favorite;
 
-  public IndexInfo(String indexClassificationName, String indexName, Integer employedItemsCount,
-      Instant basePointInTime, Double baseIndex, SourceType sourceType, Boolean favorite) {
-    this.indexClassificationName = indexClassificationName;
-    this.indexName = indexName;
-    this.employedItemsCount = employedItemsCount;
-    this.basePointInTime = basePointInTime;
-    this.baseIndex = baseIndex;
-    this.sourceType = sourceType;
-    this.favorite = favorite;
+  public static IndexInfo create(IndexInfoCreateRequestDto dto) {
+    IndexInfo indexInfo = new IndexInfo();
+    indexInfo.updateFromDto(dto);
+    indexInfo.sourceType = SourceType.USER;
+    return indexInfo;
   }
 
-  public static IndexInfo create(IndexInfoCreateRequestDto dto) {
-    return new IndexInfo(
-        null,
-        dto.indexClassificationName(),
-        dto.indexName(),
-        dto.employedItemsCount(),
-        dto.basePointInTime(),
-        dto.baseIndex(),
-        SourceType.USER,
-        dto.favorite()
-    );
+  public void updateFromDto(IndexInfoCreateRequestDto dto) {
+    this.indexClassificationName = dto.indexClassificationName();
+    this.indexName = dto.indexName();
+    this.employedItemsCount = dto.employedItemsCount();
+    this.basePointInTime = dto.basePointInTime();
+    this.baseIndex = dto.baseIndex();
+    this.favorite = dto.favorite();
   }
 }
