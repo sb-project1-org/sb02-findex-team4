@@ -9,10 +9,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface IndexInfoRepository extends JpaRepository<IndexInfo, Long> {
 
-  Page<IndexInfo> findByClassificationName(String classificationName, Pageable pageable);
+  Page<IndexInfo> findByIndexClassificationName(String indexClassificationName, Pageable pageable);
   Page<IndexInfo> findByIndexName(String indexName, Pageable pageable);
   Page<IndexInfo> findByFavorite(boolean favorite, Pageable pageable);
 
-  Page<IndexInfo> findByTypeAndName(String classificationName, String indexName, Pageable pageable);
-  Page<IndexInfo> findByTypeAndNameAndFavorite(String classificationName, String indexName, boolean favorite, Pageable pageable);
+  Page<IndexInfo> findByIndexClassificationNameAndIndexName(String type, String classificationName, Pageable pageable);
+  Page<IndexInfo> findByIndexClassificationNameAndIndexNameAndFavorite(String type, String classificationName, boolean favorite, Pageable pageable);
 }
