@@ -81,4 +81,28 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
       throw new SystemException(ErrorCode.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @Override
+  @Transactional
+  public void deleteById(Long id) {
+    try {
+      autoSyncConfigRepository.deleteById(id);
+    } catch (IllegalArgumentException e) {
+      throw new NotFoundException(ErrorCode.AUTO_SYNC_NOT_FOUND);
+    } catch (RuntimeException e) {
+      throw new SystemException(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Override
+  @Transactional
+  public void deleteByIndexInfoId(Long indexInfoId) {
+    try {
+      autoSyncConfigRepository.deleteByIndexInfo_Id(indexInfoId);
+    } catch (IllegalArgumentException e) {
+      throw new NotFoundException(ErrorCode.AUTO_SYNC_NOT_FOUND);
+    } catch (RuntimeException e) {
+      throw new SystemException(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+  }
 }
