@@ -9,7 +9,7 @@ public class IndexInfoValidatorImpl implements IndexInfoValidator {
 
   @Override
   public void validateForCreate(IndexInfoCreateRequestDto dto) {
-    if (dto.indexClassification() == null || dto.indexClassification().isBlank()) {
+    if (dto.indexClassificationName() == null || dto.indexClassificationName().isBlank()) {
       throw new IllegalArgumentException("지표 분류는 필수입니다.");
     }
 
