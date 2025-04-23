@@ -18,7 +18,7 @@ public class SyncJobHistory {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "job_type", columnDefinition = "job_type", nullable = false)
+    @Column(name = "job_type", nullable = false)
     private JobType jobType;
 
   @ManyToOne
@@ -37,7 +37,7 @@ public class SyncJobHistory {
     private Instant jobTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "result", columnDefinition = "job_result", nullable = false)
+    @Column(name = "result", nullable = false)
     private JobResult jobResult;
 
 
