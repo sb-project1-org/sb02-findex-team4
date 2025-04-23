@@ -31,7 +31,7 @@ public class IndexInfo {
   private Long id;
 
   @Column(name = "index_classification", nullable = false)
-  private String indexClassification;
+  private String indexClassificationName;
 
   @Column(name = "index_name", nullable = false)
   private String indexName;
@@ -52,9 +52,9 @@ public class IndexInfo {
   @Column(name = "favorite", nullable = false)
   private Boolean favorite;
 
-  public IndexInfo(String indexClassification, String indexName, Integer employedItemsCount,
+  public IndexInfo(String indexClassificationName, String indexName, Integer employedItemsCount,
       Instant basePointInTime, Double baseIndex, SourceType sourceType, Boolean favorite) {
-    this.indexClassification = indexClassification;
+    this.indexClassificationName = indexClassificationName;
     this.indexName = indexName;
     this.employedItemsCount = employedItemsCount;
     this.basePointInTime = basePointInTime;
@@ -66,7 +66,7 @@ public class IndexInfo {
   public static IndexInfo create(IndexInfoCreateRequestDto dto) {
     return new IndexInfo(
         null,
-        dto.indexClassification(),
+        dto.indexClassificationName(),
         dto.indexName(),
         dto.employedItemsCount(),
         dto.basePointInTime(),
