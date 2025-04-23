@@ -5,17 +5,17 @@ import lombok.Builder;
 
 @Builder
 public record ErrorResponse(
-        Instant timestamp,
-        int status,
-        String message,
-        String details
+    Instant timestamp,
+    int status,
+    String message,
+    String details
 ) {
 
-  public static ErrorResponse of(ErrorCode errorCode) {
+  public static ErrorResponse of(int httpStatus, String detail, String message) {
     return ErrorResponse.builder()
         .timestamp(Instant.now())
-        .status(errorCode.getHttpStatus())
-        .message(errorCode.getMessage())
-        .details(errorCode.getDetail()).build();
+        .status(httpStatus)
+        .message(detail)
+        .details(message).build();
   }
 }
