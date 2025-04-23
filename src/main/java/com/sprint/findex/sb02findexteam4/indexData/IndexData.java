@@ -1,6 +1,7 @@
 package com.sprint.findex.sb02findexteam4.indexData;
 
 
+import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataCreateRequest;
 import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataUpdateDto;
 import com.sprint.findex.sb02findexteam4.indexInfo.IndexInfo;
 import com.sprint.findex.sb02findexteam4.indexInfo.SourceType;
@@ -85,5 +86,22 @@ public class IndexData {
     this.tradingPrice = dto.tradingPrice();
     this.marketTotalAmount = dto.marketTotalAmount();
     return this;
+  }
+
+  public static IndexData of(IndexDataCreateRequest req, IndexInfo indexInfo, SourceType sourceType) {
+    IndexData data = new IndexData();
+    data.indexInfo = indexInfo;
+    data.baseDate = req.baseDate();
+    data.sourceType = sourceType;
+    data.marketPrice = req.marketPrice();
+    data.closingPrice = req.closingPrice();
+    data.highPrice = req.highPrice();
+    data.lowPrice = req.lowPrice();
+    data.versus = req.versus();
+    data.fluctuationRate = req.fluctuationRate();
+    data.tradingQuantity = req.tradingQuantity();
+    data.tradingPrice = req.tradingPrice();
+    data.marketTotalAmount = req.marketTotalAmount();
+    return data;
   }
 }
