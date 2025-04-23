@@ -39,13 +39,13 @@ public class IndexInfoServiceImpl implements IndexInfoService {
   public Page<IndexInfoDto> getIndexInfoWithFilters(String classificationName, String indexName,
       Boolean favorite, Pageable pageable) {
     if (classificationName != null && indexName != null && favorite != null) {
-      return indexInfoRepository.findByTypeAndNameAndFavorite(classificationName, indexName, favorite, pageable)
+      return indexInfoRepository.findByIndexClassificationNameAndIndexNameAndFavorite(classificationName, indexName, favorite, pageable)
           .map(indexInfoMapper::toDto);
     } else if (classificationName != null && indexName != null) {
-      return indexInfoRepository.findByTypeAndName(classificationName, indexName, pageable)
+      return indexInfoRepository.findByIndexClassificationNameAndIndexName(classificationName, indexName, pageable)
           .map(indexInfoMapper::toDto);
     } else if (classificationName != null) {
-      return indexInfoRepository.findByClassificationName(classificationName, pageable)
+      return indexInfoRepository.findByIndexClassificationName(classificationName, pageable)
           .map(indexInfoMapper::toDto);
     } else if (indexName != null) {
       return indexInfoRepository.findByIndexName(indexName, pageable)
