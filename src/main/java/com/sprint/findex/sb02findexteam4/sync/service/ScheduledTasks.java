@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
 import com.sprint.findex.sb02findexteam4.exception.ExternalApiException;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateRequest;
+import com.sprint.findex.sb02findexteam4.sync.dto.ApiRequest;
 import com.sprint.findex.sb02findexteam4.sync.dto.IndexDataFromApi;
 import com.sprint.findex.sb02findexteam4.sync.dto.MarketIndexResponse;
 import jakarta.annotation.PostConstruct;
@@ -42,8 +43,9 @@ public class ScheduledTasks {
   }
 
   //  @Scheduled(fixedDelay = 10000)
-  public void fetchAll() {
+  public ApiRequest fetchAll() {
     try {
+
       HttpResponse<String> response = getResponse();
       MarketIndexResponse indexResponse = mapper.readValue(response.body(),
           MarketIndexResponse.class);
@@ -52,18 +54,16 @@ public class ScheduledTasks {
 
       List<IndexDataFromApi> dataRequests = IndexDataCreateFromResponse(indexResponse);
 
-      //TODO 테스트 용도로 설치해둠. 삭제해야함
-      infoRequests.forEach(System.out::println);
-      dataRequests.forEach(System.out::println);
       log.info("자동 info, data 배치 성공 ");
 
-
+      return new ApiRequest(infoRequests, dataRequests);
     } catch (Exception e) {
       log.error("지수 정보 수집 실패", e);
+      throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
     }
   }
 
-  public void fetchIndexInfo() {
+  public List<IndexInfoCreateRequest> fetchIndexInfo() {
     try {
       HttpResponse<String> response = getResponse();
       MarketIndexResponse indexResponse = mapper.readValue(response.body(),
@@ -71,40 +71,41 @@ public class ScheduledTasks {
       List<IndexInfoCreateRequest> infoRequests = IndexInfoCreateFromResponse(
           indexResponse);
 
-      //TODO 테스트 용도로 설치해둠. 삭제해야함
-      infoRequests.forEach(System.out::println);
       log.info("수동 info 배치 성공 ");
-
+      return infoRequests;
     } catch (Exception e) {
       log.error("지수 정보 수집 실패", e);
+      throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
     }
   }
 
-  public void fetchIndexData() {
+  public List<IndexDataFromApi> fetchIndexData() {
     try {
       HttpResponse<String> response = getResponse();
       MarketIndexResponse indexResponse = mapper.readValue(response.body(),
           MarketIndexResponse.class);
       List<IndexDataFromApi> dataRequests = IndexDataCreateFromResponse(indexResponse);
 
-      //TODO 테스트 용도로 설치해둠. 삭제해야함
-      dataRequests.forEach(System.out::println);
       log.info("수동 data 배치 성공 ");
+      return dataRequests;
     } catch (Exception e) {
       log.error("지수 정보 수집 실패", e);
+      throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
     }
   }
 
-  public void fetchIndexData(String bastDateFrom, String baseDateTo) {
+  public List<IndexDataFromApi> fetchIndexData(String bastDateFrom, String baseDateTo) {
     try {
       HttpResponse<String> response = getResponse(bastDateFrom, baseDateTo);
 
       MarketIndexResponse indexResponse = mapper.readValue(response.body(),
           MarketIndexResponse.class);
       List<IndexDataFromApi> dataRequests = IndexDataCreateFromResponse(indexResponse);
-
+      log.info("수동 data 배치 성공 ");
+      return dataRequests;
     } catch (Exception e) {
       log.error("지수 정보 수집 실패", e);
+      throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
     }
   }
 
