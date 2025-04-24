@@ -37,8 +37,6 @@ public class IndexInfoServiceImpl implements IndexInfoService {
   public IndexInfoDto registerIndexInfo(IndexInfoCreateRequest requestDto) {
     indexInfoValidator.validateForCreate(requestDto);
 
-    SourceType sourceType = SourceType.USER;
-
     IndexInfoCreateCommand command = IndexInfoCreateCommand.of(requestDto);
 
     IndexInfo indexInfo = IndexInfo.create(command, sourceType);
