@@ -6,9 +6,11 @@ import lombok.Getter;
 public class NormalException extends RuntimeException {
 
   private ErrorCode errorCode;
+  private Object[] args;
 
-  public NormalException(ErrorCode errorCode) {
+  public NormalException(ErrorCode errorCode, Object... args) {
     super(errorCode.getMessage());
     this.errorCode = errorCode;
+    this.args = args;
   }
 }
