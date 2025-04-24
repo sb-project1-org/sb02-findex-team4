@@ -1,6 +1,11 @@
 package com.sprint.findex.sb02findexteam4.indexData.controller;
 
 import com.sprint.findex.sb02findexteam4.indexData.IndexData;
+import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataCreateRequest;
+import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataResponse;
+import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataUpdateRequest;
+import com.sprint.findex.sb02findexteam4.indexData.service.IndexDataService;
+import com.sprint.findex.sb02findexteam4.indexInfo.SourceType;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +22,9 @@ public class IndexDataController {
     }
 
     @PostMapping
-    public ResponseEntity<IndexData> createIndexData(@RequestBody IndexDataRequest IndexDataRequest) {
+    public ResponseEntity<IndexDataResponse> createIndexData(@RequestBody IndexDataCreateRequest request) {
         try {
-            IndexData createdIndexData = indexDataService.createIndexData(indexDataRequest);
+            IndexDataResponse createdIndexData = indexDataService.create(request, SourceType.USER);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdIndexData); //201 Created
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); //404 Not Found
@@ -31,9 +36,9 @@ public class IndexDataController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<IndexData> updateIndexData(@PathVariable Long id,@RequestBody IndexDataRequest indexDataRequest) {
+    public ResponseEntity<IndexDataResponse> updateIndexData(@PathVariable Long id,@RequestBody IndexDataUpdateRequest indexDataRequest) {
         try {
-            IndexData updatedIndexData = indexDataService.updateIndexData(id, indexDataRequest);
+            IndexDataResponse updatedIndexData = indexDataService.update(id, indexDataRequest);
             return ResponseEntity.ok(updatedIndexData); //200 OK
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); //404 Not Found
@@ -46,9 +51,9 @@ public class IndexDataController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<void> deleteIndexData(@PathVariable long id) {
+    public ResponseEntity<Void> deleteIndexData(@PathVariable long id) {
         try {
-            indexDataService.deleteIndexDataById(id);
+            indexDataService.delete(id);
             return ResponseEntity.noContent().build(); //204 No Content
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); //404 Not Found

@@ -12,5 +12,7 @@ public interface IndexDataService {
 
   IndexDataResponse update(Long id, IndexDataUpdateRequest request);
 
+  void delete(Long id);
+
   boolean isDuplicated(Long indexInfoId, Instant baseDate);
 }

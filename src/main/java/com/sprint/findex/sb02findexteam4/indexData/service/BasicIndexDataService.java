@@ -52,6 +52,14 @@ public class BasicIndexDataService implements IndexDataService {
   }
 
   @Override
+  public void delete(Long id){
+    IndexData indexData = indexDataRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException(INDEX_DATA_NOT_FOUND));
+
+    indexDataRepository.delete(indexData);
+  }
+
+  @Override
   public boolean isDuplicated(Long indexInfoId, Instant baseDate) {
     return indexDataRepository.existsByIndexInfoIdAndBaseDate(indexInfoId, baseDate);
   }
