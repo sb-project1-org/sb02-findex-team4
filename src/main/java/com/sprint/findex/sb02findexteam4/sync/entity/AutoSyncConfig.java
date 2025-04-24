@@ -1,6 +1,6 @@
 package com.sprint.findex.sb02findexteam4.sync.entity;
 
-import com.sprint.findex.sb02findexteam4.indexInfo.IndexInfo;
+import com.sprint.findex.sb02findexteam4.indexInfo.entity.IndexInfo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
