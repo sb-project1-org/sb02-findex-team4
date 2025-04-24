@@ -1,9 +1,12 @@
 package com.sprint.findex.sb02findexteam4.indexInfo.service.impl;
 
-import com.sprint.findex.sb02findexteam4.indexInfo.dto.IndexInfoCreateRequestDto;
+import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
+import com.sprint.findex.sb02findexteam4.exception.NormalException;
+import com.sprint.findex.sb02findexteam4.indexInfo.dto.IndexInfoCreateRequest;
 import com.sprint.findex.sb02findexteam4.indexInfo.dto.IndexInfoDto;
-import com.sprint.findex.sb02findexteam4.indexInfo.dto.IndexInfoUpdateRequestDto;
+import com.sprint.findex.sb02findexteam4.indexInfo.dto.IndexInfoUpdateRequest;
 import com.sprint.findex.sb02findexteam4.indexInfo.entity.IndexInfo;
+import com.sprint.findex.sb02findexteam4.indexInfo.entity.SourceType;
 import com.sprint.findex.sb02findexteam4.indexInfo.mapper.IndexInfoMapper;
 import com.sprint.findex.sb02findexteam4.indexInfo.repository.IndexInfoRepository;
 import com.sprint.findex.sb02findexteam4.indexInfo.service.IndexInfoService;
@@ -29,38 +32,56 @@ public class IndexInfoServiceImpl implements IndexInfoService {
   }
 
   @Override
-  public void registerIndexInfo(IndexInfoCreateRequestDto requestDto) {
+  public IndexInfoDto registerIndexInfo(IndexInfoCreateRequest requestDto) {
     indexInfoValidator.validateForCreate(requestDto);
-    IndexInfo indexInfo = IndexInfo.create(requestDto);
+
+    SourceType sourceType = SourceType.USER;
+
+    IndexInfo indexInfo = IndexInfo.create(requestDto, sourceType);
     indexInfoRepository.save(indexInfo);
+
+    // 자동연동 엔티티 만들어야 합니다.
+
+    IndexInfoDto indexInfoDto = new IndexInfoDto(
+          indexInfo.getId(),
+          indexInfo.getIndexClassification(),
+          indexInfo.getIndexName(),
+          indexInfo.getEmployedItemsCount(),
+          indexInfo.getBasePointInTime(),
+          indexInfo.getBaseIndex(),
+          indexInfo.getSourceType(),
+          indexInfo.getFavorite()
+        );
+
+    return indexInfoDto;
   }
 
   @Override
   public Page<IndexInfoDto> getIndexInfoWithFilters(String classificationName, String indexName,
       Boolean favorite, Pageable pageable) {
-    if (classificationName != null && indexName != null && favorite != null) {
-      return indexInfoRepository.findByIndexClassificationNameAndIndexNameAndFavorite(classificationName, indexName, favorite, pageable)
-          .map(indexInfoMapper::toDto);
-    } else if (classificationName != null && indexName != null) {
-      return indexInfoRepository.findByIndexClassificationNameAndIndexName(classificationName, indexName, pageable)
-          .map(indexInfoMapper::toDto);
-    } else if (classificationName != null) {
-      return indexInfoRepository.findByIndexClassificationName(classificationName, pageable)
-          .map(indexInfoMapper::toDto);
-    } else if (indexName != null) {
-      return indexInfoRepository.findByIndexName(indexName, pageable)
-          .map(indexInfoMapper::toDto);
-    } else if (favorite != null) {
-      return indexInfoRepository.findByFavorite(favorite, pageable)
-          .map(indexInfoMapper::toDto);
-    }
+//    if (classificationName != null && indexName != null && favorite != null) {
+//      return indexInfoRepository.findByIndexClassificationAndIndexNameAndFavorite(classificationName, indexName, favorite, pageable)
+//          .map(indexInfoMapper::toDto);
+//    } else if (classificationName != null && indexName != null) {
+//      return indexInfoRepository.findByIndexClassificationAndIndexName(classificationName, indexName, pageable)
+//          .map(indexInfoMapper::toDto);
+//    } else if (classificationName != null) {
+//      return indexInfoRepository.findByIndexClassification(classificationName, pageable)
+//          .map(indexInfoMapper::toDto);
+//    } else if (indexName != null) {
+//      return indexInfoRepository.findByIndexName(indexName, pageable)
+//          .map(indexInfoMapper::toDto);
+//    } else if (favorite != null) {
+//      return indexInfoRepository.findByFavorite(favorite, pageable)
+//          .map(indexInfoMapper::toDto);
+//    }
     return Page.empty();
   }
 
   @Override
-  public void updateIndexInfo(Long id, IndexInfoUpdateRequestDto updateDto) {
+  public IndexInfoDto updateIndexInfo(Long id, IndexInfoUpdateRequest updateDto) {
     // TODO: 추후 수정
-    throw new UnsupportedOperationException("updateIndexInfo 메서드는 아직 구현되지 않았습니다.");
+    throw new UnsupportedOperationException("updateIndexInfo 추후 수정");
   }
 
   @Override

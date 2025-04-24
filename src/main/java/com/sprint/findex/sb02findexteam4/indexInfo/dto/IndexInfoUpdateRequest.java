@@ -1,10 +1,10 @@
 package com.sprint.findex.sb02findexteam4.indexInfo.dto;
 
-import java.time.Instant;
+import java.time.ZonedDateTime;
 
-public record IndexInfoUpdateRequestDto(
+public record IndexInfoUpdateRequest(
     Integer employedItemsCount,
-    Instant basePointInTime,
+    ZonedDateTime basePointInTime,
     Double baseIndex,
     Boolean favorite
 ) {

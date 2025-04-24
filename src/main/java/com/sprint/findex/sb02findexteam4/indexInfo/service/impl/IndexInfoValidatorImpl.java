@@ -1,6 +1,6 @@
 package com.sprint.findex.sb02findexteam4.indexInfo.service.impl;
 
-import com.sprint.findex.sb02findexteam4.indexInfo.dto.IndexInfoCreateRequestDto;
+import com.sprint.findex.sb02findexteam4.indexInfo.dto.IndexInfoCreateRequest;
 import com.sprint.findex.sb02findexteam4.indexInfo.service.IndexInfoValidator;
 import org.springframework.stereotype.Component;
 
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 public class IndexInfoValidatorImpl implements IndexInfoValidator {
 
   @Override
-  public void validateForCreate(IndexInfoCreateRequestDto dto) {
-    if (dto.indexClassificationName() == null || dto.indexClassificationName().isBlank()) {
+  public void validateForCreate(IndexInfoCreateRequest dto) {
+    if (dto.indexClassification() == null || dto.indexClassification().isBlank()) {
       throw new IllegalArgumentException("지표 분류는 필수입니다.");
     }
 

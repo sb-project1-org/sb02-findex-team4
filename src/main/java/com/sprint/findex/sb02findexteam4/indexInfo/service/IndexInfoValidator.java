@@ -1,7 +1,7 @@
 package com.sprint.findex.sb02findexteam4.indexInfo.service;
 
-import com.sprint.findex.sb02findexteam4.indexInfo.dto.IndexInfoCreateRequestDto;
+import com.sprint.findex.sb02findexteam4.indexInfo.dto.IndexInfoCreateRequest;
 
 public interface IndexInfoValidator {
-  void validateForCreate(IndexInfoCreateRequestDto dto);
+  void validateForCreate(IndexInfoCreateRequest dto);
 }
