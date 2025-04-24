@@ -1,6 +1,8 @@
 package com.sprint.findex.sb02findexteam4.sync.service;
 
+import com.sprint.findex.sb02findexteam4.sync.dto.CursorPageResponseSyncJobDto;
 import com.sprint.findex.sb02findexteam4.sync.dto.SyncJobHistoryCreateDto;
+import com.sprint.findex.sb02findexteam4.sync.dto.SyncJobSearchCondition;
 import com.sprint.findex.sb02findexteam4.sync.entity.JobResult;
 import com.sprint.findex.sb02findexteam4.sync.entity.SyncJobHistory;
 import com.sprint.findex.sb02findexteam4.sync.repository.SyncJobHistoryRepository;
@@ -26,5 +28,10 @@ public class BasicSyncJobHistoryService implements SyncJobHistoryService {
         );
 
         return syncJobHistoryRepository.save(syncJobHistory);
+    }
+
+    @Override
+    public CursorPageResponseSyncJobDto findHistoryByCursor(SyncJobSearchCondition condition) {
+        return syncJobHistoryRepository.findSyncJobs(condition);
     }
 }
