@@ -3,6 +3,7 @@ package com.sprint.findex.sb02findexteam4.util;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -14,9 +15,7 @@ public class TimeUtils {
   }
 
   public static Instant formatedTimeInstant(String string) {
-    DateTimeFormatter YMD = DateTimeFormatter.ofPattern("yyyyMMdd");
-    string = string.trim();
-    LocalDate date = LocalDate.parse(string, YMD);
-    return date.atStartOfDay(ZoneId.systemDefault()).toInstant();
+    LocalDate localDate = LocalDate.parse(string);
+    return localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
   }
 }
