@@ -1,6 +1,6 @@
 package com.sprint.findex.sb02findexteam4.sync.entity;
 
-import com.sprint.findex.sb02findexteam4.indexInfo.IndexInfo;
+import com.sprint.findex.sb02findexteam4.indexInfo.entity.IndexInfo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "index_auto_sync")
 @Entity
 public class AutoSyncConfig {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -44,6 +45,10 @@ public class AutoSyncConfig {
 
   public static AutoSyncConfig create(IndexInfo indexInfo, boolean enabled) {
     return new AutoSyncConfig(indexInfo, enabled);
+  }
+
+  public void update(boolean newEnabled) {
+    this.enabled = newEnabled;
   }
 
   public void enableAutoSync() {
