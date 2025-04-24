@@ -18,4 +18,11 @@ public class TimeUtils {
     LocalDate localDate = LocalDate.parse(string);
     return localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
   }
+
+  public static Instant formatedTimeInstantFromApi(String string) {
+    DateTimeFormatter YMD = DateTimeFormatter.ofPattern("yyyyMMdd");
+    string = string.trim();
+    LocalDate date = LocalDate.parse(string, YMD);
+    return date.atStartOfDay(ZoneId.of("Asia/Seoul")).toInstant();
+  }
 }
