@@ -1,15 +1,21 @@
 package com.sprint.findex.sb02findexteam4.indexData.controller;
 
-import com.sprint.findex.sb02findexteam4.indexData.IndexData;
+
 import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataCreateRequest;
 import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataResponse;
 import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataUpdateRequest;
 import com.sprint.findex.sb02findexteam4.indexData.service.IndexDataService;
-import com.sprint.findex.sb02findexteam4.indexInfo.SourceType;
+import com.sprint.findex.sb02findexteam4.indexInfo.entity.SourceType;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/index-data")

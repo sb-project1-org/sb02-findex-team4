@@ -3,8 +3,8 @@ package com.sprint.findex.sb02findexteam4.indexData;
 
 import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataCreateRequest;
 import com.sprint.findex.sb02findexteam4.indexData.dto.IndexDataUpdateRequest;
-import com.sprint.findex.sb02findexteam4.indexInfo.IndexInfo;
-import com.sprint.findex.sb02findexteam4.indexInfo.SourceType;
+import com.sprint.findex.sb02findexteam4.indexInfo.entity.IndexInfo;
+import com.sprint.findex.sb02findexteam4.indexInfo.entity.SourceType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

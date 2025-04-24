@@ -7,31 +7,32 @@ import com.sprint.findex.sb02findexteam4.indexInfo.dto.IndexInfoDto;
 import com.sprint.findex.sb02findexteam4.indexInfo.dto.IndexInfoUpdateRequest;
 import com.sprint.findex.sb02findexteam4.indexInfo.entity.IndexInfo;
 import com.sprint.findex.sb02findexteam4.indexInfo.entity.SourceType;
-import com.sprint.findex.sb02findexteam4.indexInfo.mapper.IndexInfoMapper;
 import com.sprint.findex.sb02findexteam4.indexInfo.repository.IndexInfoRepository;
 import com.sprint.findex.sb02findexteam4.indexInfo.service.IndexInfoService;
 import com.sprint.findex.sb02findexteam4.indexInfo.service.IndexInfoValidator;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.sprint.findex.sb02findexteam4.sync.service.AutoSyncConfigService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 public class IndexInfoServiceImpl implements IndexInfoService {
 
   private final IndexInfoRepository indexInfoRepository;
   private final IndexInfoValidator indexInfoValidator;
-
-  @Autowired
-  private IndexInfoMapper indexInfoMapper;
+  private final AutoSyncConfigService autoSyncConfigService;
 
   public IndexInfoServiceImpl(IndexInfoRepository indexInfoRepository,
-      IndexInfoValidator indexInfoValidator) {
+      IndexInfoValidator indexInfoValidator, AutoSyncConfigService autoSyncConfigService) {
     this.indexInfoRepository = indexInfoRepository;
     this.indexInfoValidator = indexInfoValidator;
+    this.autoSyncConfigService = autoSyncConfigService;
   }
 
   @Override
+  @Transactional
   public IndexInfoDto registerIndexInfo(IndexInfoCreateRequest requestDto) {
     indexInfoValidator.validateForCreate(requestDto);
 
@@ -41,6 +42,7 @@ public class IndexInfoServiceImpl implements IndexInfoService {
     indexInfoRepository.save(indexInfo);
 
     // 자동연동 엔티티 만들어야 합니다.
+    autoSyncConfigService.create(indexInfo);
 
     IndexInfoDto indexInfoDto = new IndexInfoDto(
           indexInfo.getId(),
@@ -79,6 +81,25 @@ public class IndexInfoServiceImpl implements IndexInfoService {
   }
 
   @Override
+  public IndexInfoDto findById(Long id) {
+    IndexInfo indexInfo = indexInfoRepository.findById(id)
+        .orElseThrow(() -> new NormalException(ErrorCode.INDEX_INFO_NOT_FOUND));
+
+    IndexInfoDto indexInfoDto = new IndexInfoDto(
+        indexInfo.getId(),
+        indexInfo.getIndexClassification(),
+        indexInfo.getIndexName(),
+        indexInfo.getEmployedItemsCount(),
+        indexInfo.getBasePointInTime(),
+        indexInfo.getBaseIndex(),
+        indexInfo.getSourceType(),
+        indexInfo.getFavorite()
+    );
+
+    return indexInfoDto;
+  }
+
+  @Override
   public IndexInfoDto updateIndexInfo(Long id, IndexInfoUpdateRequest updateDto) {
     // TODO: 추후 수정
     throw new UnsupportedOperationException("updateIndexInfo 추후 수정");
@@ -87,5 +108,6 @@ public class IndexInfoServiceImpl implements IndexInfoService {
   @Override
   public void deleteIndexInfo(Long id) {
     indexInfoRepository.deleteById(id);
+    autoSyncConfigService.deleteByIndexInfoId(id);
   }
 }

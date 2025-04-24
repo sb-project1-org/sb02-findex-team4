@@ -1,7 +1,6 @@
 package com.sprint.findex.sb02findexteam4.indexData.dto;
 
 import com.sprint.findex.sb02findexteam4.indexData.IndexData;
-import com.sprint.findex.sb02findexteam4.indexInfo.SourceType;
 import java.math.BigDecimal;
 import java.time.Instant;
 
@@ -9,7 +8,7 @@ public record IndexDataResponse(
     Long id,
     Long indexInfoId,
     Instant baseDate,
-    SourceType sourceType,
+    com.sprint.findex.sb02findexteam4.indexInfo.entity.SourceType sourceType,
     BigDecimal marketPrice,
     BigDecimal closingPrice,
     BigDecimal highPrice,
