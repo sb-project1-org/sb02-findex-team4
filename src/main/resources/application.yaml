@@ -25,6 +25,9 @@ spring:
       mode: always
       continue-on-error: false
 
+openApi:
+  key:
+
 logging:
   level:
     org:
