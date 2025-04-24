@@ -32,6 +32,12 @@ public class IndexInfoController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<IndexInfoDto> findById(@PathVariable Long id) {
+        IndexInfoDto indexInfoDto = indexInfoService.findById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(indexInfoDto);
+    }
+
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateIndexInfo(@PathVariable Long id, @RequestBody IndexInfoUpdateRequest indexInfoUpdateRequest) {

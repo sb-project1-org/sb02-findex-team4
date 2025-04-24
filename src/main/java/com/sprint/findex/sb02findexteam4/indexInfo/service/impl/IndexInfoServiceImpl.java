@@ -45,15 +45,15 @@ public class IndexInfoServiceImpl implements IndexInfoService {
     autoSyncConfigService.create(indexInfo);
 
     IndexInfoDto indexInfoDto = new IndexInfoDto(
-          indexInfo.getId(),
-          indexInfo.getIndexClassification(),
-          indexInfo.getIndexName(),
-          indexInfo.getEmployedItemsCount(),
-          indexInfo.getBasePointInTime(),
-          indexInfo.getBaseIndex(),
-          indexInfo.getSourceType(),
-          indexInfo.getFavorite()
-        );
+        indexInfo.getId(),
+        indexInfo.getIndexClassification(),
+        indexInfo.getIndexName(),
+        indexInfo.getEmployedItemsCount(),
+        indexInfo.getBasePointInTime(),
+        indexInfo.getBaseIndex(),
+        indexInfo.getSourceType(),
+        indexInfo.getFavorite()
+    );
 
     return indexInfoDto;
   }

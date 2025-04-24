@@ -10,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.time.ZonedDateTime;
@@ -17,6 +18,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(
@@ -24,6 +26,7 @@ import lombok.NoArgsConstructor;
     uniqueConstraints = @UniqueConstraint(columnNames = {"index_classification", "index_name"})
 )
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class IndexInfo {
@@ -53,6 +56,9 @@ public class IndexInfo {
 
   @Column(name = "favorite", nullable = false)
   private Boolean favorite;
+
+  @OneToMany(mappedBy = "indexInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<IndexData> indexDataList;
 
   public static IndexInfo create(IndexInfoCreateRequest dto, SourceType sourceType) {
     IndexInfo indexInfo = new IndexInfo();
