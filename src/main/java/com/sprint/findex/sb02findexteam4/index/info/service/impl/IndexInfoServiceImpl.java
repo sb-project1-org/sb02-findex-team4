@@ -1,13 +1,18 @@
 package com.sprint.findex.sb02findexteam4.index.info.service.impl;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
 import com.sprint.findex.sb02findexteam4.exception.NormalException;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateCommand;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoDto;
+import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoSummaryDto;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
+import com.sprint.findex.sb02findexteam4.index.info.entity.QIndexInfo;
 import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import com.sprint.findex.sb02findexteam4.index.info.repository.IndexInfoRepository;
 import com.sprint.findex.sb02findexteam4.index.info.service.IndexInfoService;
@@ -16,9 +21,12 @@ import com.sprint.findex.sb02findexteam4.sync.service.AutoSyncConfigService;
 import com.sprint.findex.sb02findexteam4.util.TimeUtils;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,48 +78,25 @@ public class IndexInfoServiceImpl implements IndexInfoService {
     return indexInfo;
   }
 
+//  @Override
+//  public Page<IndexInfoSummaryDto> getIndexInfoWithFilters() {
+//  }
+
   @Override
-  public Page<IndexInfoDto> getIndexInfoWithFilters(String classificationName, String indexName,
-      Boolean favorite, Pageable pageable) {
-//
-//    QIndexInfo q = QIndexInfo.indexInfo;
-//    BooleanBuilder builder = new BooleanBuilder();
-//
-//    if (classificationName != null && !classificationName.isBlank()) {
-//      builder.and(q.indexClassification.containsIgnoreCase(classificationName));
-//    }
-//
-//    if (indexName != null && !indexName.isBlank()) {
-//      builder.and(q.indexName.containsIgnoreCase(indexName));
-//    }
-//
-//    if (favorite != null) {
-//      builder.and(q.favorite.eq(favorite));
-//    }
-//
-//    long total = queryFactory
-//        .select(q.count())
-//        .from(q)
-//        .where(builder)
-//        .fetchOne();
-//
-//    List<IndexInfo> resultList = queryFactory
-//        .selectFrom(q)
-//        .where(builder)
-//        .offset(pageable.getOffset())
-//        .limit(pageable.getPageSize())
-//        .orderBy(q.id.desc())
-//        .fetch();
-//
-//    List<IndexInfoDto> dtoList = resultList.stream()
-//        .map(IndexInfoDto::of)
-//        .toList();
-//
-//    return new PageImpl<>(dtoList, pageable, total);
-    return Page.empty();
+  public List<IndexInfoSummaryDto> getIndexInfoSummaries() {
+    QIndexInfo q = QIndexInfo.indexInfo;
+
+    return queryFactory
+        .select(Projections.constructor(
+            IndexInfoSummaryDto.class,
+            q.id,
+            q.indexClassification,
+            q.indexName
+        ))
+        .from(q)
+        .orderBy(q.id.desc())
+        .fetch();
   }
-
-
 
   @Override
   public IndexInfoDto findById(Long id) {
