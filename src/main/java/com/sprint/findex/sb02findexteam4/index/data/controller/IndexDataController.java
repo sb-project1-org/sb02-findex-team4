@@ -5,6 +5,7 @@ import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexPerformanceDto;
+import com.sprint.findex.sb02findexteam4.index.data.dto.RankedIndexPerformanceDto;
 import com.sprint.findex.sb02findexteam4.index.data.entity.PeriodType;
 import com.sprint.findex.sb02findexteam4.index.data.service.IndexDataService;
 import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
@@ -58,6 +59,16 @@ public class IndexDataController {
     public ResponseEntity<List<IndexPerformanceDto>> getFavoriteIndexPerformances(
         @RequestParam(defaultValue = "DAILY") PeriodType periodType) {
         List<IndexPerformanceDto> result = indexDataService.getFavoriteIndexPerformances(periodType);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/performance/rank")
+    public ResponseEntity<List<RankedIndexPerformanceDto>> getPerformanceRank(
+        @RequestParam(required = false) Long indexInfoId,
+        @RequestParam(defaultValue = "DAILY") PeriodType periodType,
+        @RequestParam(defaultValue = "10") int limit
+    ) {
+        List<RankedIndexPerformanceDto> result = indexDataService.getIndexPerformanceRank(indexInfoId, periodType, limit);
         return ResponseEntity.ok(result);
     }
 

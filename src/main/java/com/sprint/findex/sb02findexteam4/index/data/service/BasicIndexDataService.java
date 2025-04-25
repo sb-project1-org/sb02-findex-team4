@@ -7,6 +7,7 @@ import static com.sprint.findex.sb02findexteam4.exception.ErrorCode.INDEX_INFO_N
 import com.sprint.findex.sb02findexteam4.exception.AlreadyExistsException;
 import com.sprint.findex.sb02findexteam4.exception.NotFoundException;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexPerformanceDto;
+import com.sprint.findex.sb02findexteam4.index.data.dto.RankedIndexPerformanceDto;
 import com.sprint.findex.sb02findexteam4.index.data.entity.IndexData;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
@@ -23,6 +24,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -74,13 +77,48 @@ public class BasicIndexDataService implements IndexDataService {
           IndexData current = indexDataRepository.findByIndexInfoIdAndBaseDateOnlyDateMatch(
               indexInfo.getId(), today
           ).orElse(null);
-          IndexData past = indexDataRepository.findByIndexInfoIdAndBaseDateOnlyDateMatch(indexInfo.getId(),
+          IndexData past = indexDataRepository.findByIndexInfoIdAndBaseDateOnlyDateMatch(
+                  indexInfo.getId(),
                   calculateBaseDate(periodType))
               .orElse(null);
           return IndexPerformanceDto.of(indexInfo, current, past);
         })
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
+  }
+
+  public List<RankedIndexPerformanceDto> getIndexPerformanceRank(Long indexInfoId,
+      PeriodType periodType, int limit) {
+    LocalDate baseDate = calculateBaseDate(periodType);
+    LocalDate today = Instant.now().atZone(ZoneId.of("Asia/Seoul")).toLocalDate();
+
+    List<IndexInfo> targetInfos = (indexInfoId != null)
+        ? indexInfoRepository.findAllById(List.of(indexInfoId))
+        : indexInfoRepository.findAll();
+
+    List<IndexPerformanceDto> sortedList = targetInfos.stream()
+        .map(info -> {
+          IndexData current = indexDataRepository
+              .findByIndexInfoIdAndBaseDateOnlyDateMatch(info.getId(), today)
+              .orElse(null);
+
+          IndexData before = indexDataRepository
+              .findByIndexInfoIdAndBaseDateOnlyDateMatch(info.getId(), baseDate)
+              .orElse(null);
+
+          return IndexPerformanceDto.of(info, current, before);
+        })
+        .filter(dto -> dto != null && dto.fluctuationRate() != null)
+        .sorted(Comparator.comparing(IndexPerformanceDto::fluctuationRate).reversed())
+        .limit(limit)
+        .toList();
+
+    List<RankedIndexPerformanceDto> rankedList = new ArrayList<>();
+    for (int i = 0; i < sortedList.size(); i++) {
+      rankedList.add(new RankedIndexPerformanceDto(sortedList.get(i),i + 1));
+    }
+
+    return rankedList;
   }
 
   @Override
