@@ -1,5 +1,9 @@
 package com.sprint.findex.sb02findexteam4.index.info.service.impl;
 
+import static com.sprint.findex.sb02findexteam4.exception.ErrorCode.INDEX_INFO_BAD_REQUEST;
+
+import com.sprint.findex.sb02findexteam4.exception.NormalException;
+import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateCommand;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.service.IndexInfoValidator;
 import org.springframework.stereotype.Component;
@@ -10,27 +14,54 @@ public class IndexInfoValidatorImpl implements IndexInfoValidator {
   @Override
   public void validateForCreate(IndexInfoCreateRequest dto) {
     if (dto.indexClassification() == null || dto.indexClassification().isBlank()) {
-      throw new IllegalArgumentException("지표 분류는 필수입니다.");
+      throw new NormalException(INDEX_INFO_BAD_REQUEST);
     }
 
     if (dto.indexName() == null || dto.indexName().isBlank()) {
-      throw new IllegalArgumentException("지표 이름은 필수입니다.");
+      throw new NormalException(INDEX_INFO_BAD_REQUEST);
     }
 
     if (dto.employedItemsCount() == null || dto.employedItemsCount() < 0) {
-      throw new IllegalArgumentException("지표 항목 수는 0 이상이어야 합니다.");
+      throw new NormalException(INDEX_INFO_BAD_REQUEST);
     }
 
     if (dto.basePointInTime() == null) {
-      throw new IllegalArgumentException("기준 시점은 필수입니다.");
+      throw new NormalException(INDEX_INFO_BAD_REQUEST);
     }
 
     if (dto.baseIndex() == null || dto.baseIndex() < 0) {
-      throw new IllegalArgumentException("기준 지수는 0 이상이어야 합니다.");
+      throw new NormalException(INDEX_INFO_BAD_REQUEST);
     }
 
     if (dto.favorite() == null) {
-      throw new IllegalArgumentException("즐겨찾기 여부는 필수입니다.");
+      throw new NormalException(INDEX_INFO_BAD_REQUEST);
+    }
+  }
+
+  @Override
+  public void validateForCreate(IndexInfoCreateCommand dto) {
+    if (dto.indexClassification() == null || dto.indexClassification().isBlank()) {
+      throw new NormalException(INDEX_INFO_BAD_REQUEST);
+    }
+
+    if (dto.indexName() == null || dto.indexName().isBlank()) {
+      throw new NormalException(INDEX_INFO_BAD_REQUEST);
+    }
+
+    if (dto.employedItemsCount() == null || dto.employedItemsCount() < 0) {
+      throw new NormalException(INDEX_INFO_BAD_REQUEST);
+    }
+
+    if (dto.basePointInTime() == null) {
+      throw new NormalException(INDEX_INFO_BAD_REQUEST);
+    }
+
+    if (dto.baseIndex() == null || dto.baseIndex() < 0) {
+      throw new NormalException(INDEX_INFO_BAD_REQUEST);
+    }
+
+    if (dto.favorite() == null) {
+      throw new NormalException(INDEX_INFO_BAD_REQUEST);
     }
   }
 }
