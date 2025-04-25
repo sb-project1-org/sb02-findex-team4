@@ -25,14 +25,14 @@ public record IndexInfoCreateCommand (
             .build();
     }
 
-    public static IndexInfoCreateCommand fromApi(IndexInfoCreateRequest request) {
-        return IndexInfoCreateCommand.builder()
-            .indexClassification(request.indexClassification())
-            .indexName(request.indexName())
-            .employedItemsCount(request.employedItemsCount())
-            .basePointInTime(TimeUtils.formatedTimeInstantFromApi(request.basePointInTime()))
-            .baseIndex(request.baseIndex())
-            .favorite(request.favorite())
-            .build();
-    }
+//    public static IndexInfoCreateCommand fromApi(IndexInfoCreateRequest request) {
+//        return IndexInfoCreateCommand.builder()
+//            .indexClassification(request.indexClassification())
+//            .indexName(request.indexName())
+//            .employedItemsCount(request.employedItemsCount())
+//            .basePointInTime(TimeUtils.formatedTimeInstantFromApi(request.basePointInTime()))
+//            .baseIndex(request.baseIndex())
+//            .favorite(request.favorite())
+//            .build();
+//    }
 }
