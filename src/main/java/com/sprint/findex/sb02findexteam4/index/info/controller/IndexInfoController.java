@@ -2,10 +2,16 @@ package com.sprint.findex.sb02findexteam4.index.info.controller;
 
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoDto;
+import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoSummaryDto;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import com.sprint.findex.sb02findexteam4.index.info.service.IndexInfoService;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,12 +44,11 @@ public class IndexInfoController {
         return ResponseEntity.status(HttpStatus.OK).body(indexInfoDto);
     }
 
-
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateIndexInfo(@PathVariable Long id, @RequestBody IndexInfoUpdateRequest indexInfoUpdateRequest) {
+    public ResponseEntity<IndexInfoDto> updateIndexInfo(@PathVariable Long id, @RequestBody IndexInfoUpdateRequest indexInfoUpdateRequest) {
         try {
-            indexInfoService.updateIndexInfo(id, indexInfoUpdateRequest);
-            return ResponseEntity.ok().build(); // 200 OK
+            IndexInfoDto updatedIndexInfo = indexInfoService.updateIndexInfo(id, indexInfoUpdateRequest); // 반환 값 저장
+            return ResponseEntity.ok(updatedIndexInfo); // 200 OK, 수정된 데이터 반환
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 404 Not Found
         } catch (Exception e) {
