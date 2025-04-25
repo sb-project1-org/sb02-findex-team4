@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
 import com.sprint.findex.sb02findexteam4.exception.ExternalApiException;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateRequest;
-import com.sprint.findex.sb02findexteam4.sync.dto.ApiRequest;
 import com.sprint.findex.sb02findexteam4.sync.dto.IndexDataFromApi;
 import com.sprint.findex.sb02findexteam4.sync.dto.MarketIndexResponse;
 import jakarta.annotation.PostConstruct;
@@ -42,52 +41,15 @@ public class ScheduledTasks {
     encodeServiceKey = URLEncoder.encode(rawServiceKey, StandardCharsets.UTF_8);
   }
 
-  //  @Scheduled(fixedDelay = 10000)
-  public ApiRequest fetchAll() {
-    try {
-
-      HttpResponse<String> response = getResponse();
-      MarketIndexResponse indexResponse = mapper.readValue(response.body(),
-          MarketIndexResponse.class);
-      List<IndexInfoCreateRequest> infoRequests = IndexInfoCreateFromResponse(
-          indexResponse);
-
-      List<IndexDataFromApi> dataRequests = IndexDataCreateFromResponse(indexResponse);
-
-      log.info("자동 info, data 배치 성공 ");
-
-      return new ApiRequest(infoRequests, dataRequests);
-    } catch (Exception e) {
-      log.error("지수 정보 수집 실패", e);
-      throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
-    }
-  }
-
   public List<IndexInfoCreateRequest> fetchIndexInfo() {
     try {
-      HttpResponse<String> response = getResponse();
+      HttpResponse<String> response = getResponse(null, null);
       MarketIndexResponse indexResponse = mapper.readValue(response.body(),
           MarketIndexResponse.class);
       List<IndexInfoCreateRequest> infoRequests = IndexInfoCreateFromResponse(
           indexResponse);
-
       log.info("수동 info 배치 성공 ");
       return infoRequests;
-    } catch (Exception e) {
-      log.error("지수 정보 수집 실패", e);
-      throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
-    }
-  }
-
-  public List<IndexDataFromApi> fetchIndexData() {
-    try {
-      HttpResponse<String> response = getResponse();
-      MarketIndexResponse indexResponse = mapper.readValue(response.body(),
-          MarketIndexResponse.class);
-      List<IndexDataFromApi> dataRequests = IndexDataCreateFromResponse(indexResponse);
-
-      log.info("수동 data 배치 성공 ");
-      return dataRequests;
     } catch (Exception e) {
       log.error("지수 정보 수집 실패", e);
       throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
@@ -109,32 +71,14 @@ public class ScheduledTasks {
     }
   }
 
-  private HttpResponse<String> getResponse() {
-    try {
-      URI uri = getUri();
-      HttpRequest request = HttpRequest.newBuilder()
-          .uri(uri)
-          .timeout(Duration.ofSeconds(10))
-          .GET()
-          .build();
-      HttpResponse<String> response = HttpClient.newHttpClient()
-          .send(request, BodyHandlers.ofString());
-      if (response.statusCode() == 200) {
-        log.info("response : {}", response.body());
-        return response;
-      } else {
-        log.warn("API 호출 오류 code={}, body={}", response.statusCode(), response.body());
-        throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
-      }
-
-    } catch (IOException | InterruptedException e) {
-      throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
-    }
-  }
-
   private HttpResponse<String> getResponse(String bastDateFrom, String baseDateTo) {
     try {
-      URI uri = getUri(bastDateFrom, baseDateTo);
+      URI uri;
+      if (bastDateFrom == null && baseDateTo == null) {
+        uri = getUri();
+      } else {
+        uri = getUri(bastDateFrom, baseDateTo);
+      }
 
       HttpRequest request = HttpRequest.newBuilder()
           .uri(uri)
