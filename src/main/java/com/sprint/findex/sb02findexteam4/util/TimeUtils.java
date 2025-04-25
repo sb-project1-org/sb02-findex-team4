@@ -29,7 +29,7 @@ public class TimeUtils {
    * @return yyyy-MM-dd
    */
   public static String formatedTimeString(Instant instant) {
-    return ZonedDateTime.ofInstant(instant, ZoneId.of("Asia/Seoul"))
+    return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC)
         .format(yyyy_MM_dd);
   }
 
@@ -55,7 +55,7 @@ public class TimeUtils {
   public static Instant formatedTimeInstantFromApi(String string) {
     string = string.trim();
     LocalDate date = LocalDate.parse(string, yyyyMMdd);
-    return date.atStartOfDay(ZoneId.of("Asia/Seoul")).toInstant();
+    return date.atStartOfDay(ZoneOffset.UTC).toInstant();
   }
 
 //  public static Instant oneMonthAgoDateToInstant() {
@@ -73,7 +73,7 @@ public class TimeUtils {
   public static String oneMonthAgoDateToString() {
     ZonedDateTime oneMonthAgo = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).minusMonths(1);
     //yyyy-mm-dd 포맷
-    return oneMonthAgo.toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+    return oneMonthAgo.toLocalDate().format(yyyy_MM_dd);
   }
 
   //  public static String formatedStringToDash(String rawDate) {
