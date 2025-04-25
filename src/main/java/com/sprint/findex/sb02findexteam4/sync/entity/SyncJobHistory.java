@@ -14,6 +14,7 @@ import java.time.Instant;
 @Entity
 public class SyncJobHistory {
 
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -21,6 +22,7 @@ public class SyncJobHistory {
   @Enumerated(EnumType.STRING)
   @Column(name = "job_type", nullable = false)
   private JobType jobType;
+
 
   @ManyToOne
   @JoinColumn(name = "index_info_id")

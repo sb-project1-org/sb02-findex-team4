@@ -3,6 +3,7 @@ package com.sprint.findex.sb02findexteam4.index.info.controller;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoDto;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoUpdateRequest;
+import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import com.sprint.findex.sb02findexteam4.index.info.service.IndexInfoService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class IndexInfoController {
     @PostMapping
     public ResponseEntity<IndexInfoDto> createIndexInfo(@RequestBody IndexInfoCreateRequest indexInfoCreateRequest) {
         try {
-            IndexInfoDto indexInfoDto = indexInfoService.registerIndexInfo(indexInfoCreateRequest);
+            IndexInfoDto indexInfoDto = indexInfoService.registerIndexInfo(indexInfoCreateRequest, SourceType.USER);
             return ResponseEntity.status(HttpStatus.CREATED).body(indexInfoDto); // 201 Created
         } catch (Exception e) {
             e.printStackTrace();
