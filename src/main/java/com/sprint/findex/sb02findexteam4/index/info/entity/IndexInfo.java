@@ -1,6 +1,6 @@
 package com.sprint.findex.sb02findexteam4.index.info.entity;
 
-import com.sprint.findex.sb02findexteam4.index.data.IndexData;
+import com.sprint.findex.sb02findexteam4.index.data.entity.IndexData;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateCommand;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
