@@ -31,8 +31,6 @@ public class SyncJobController {
         @RequestParam(defaultValue = "desc", required = false) String sortDirection,
         @RequestParam(defaultValue = "10", required = false) int size
     ){
-        System.out.println("시작");
-        System.out.println(request);
         SyncJobSearchCondition condition = SyncJobSearchCondition.of(request, sortField, sortDirection, size);
         CursorPageResponseSyncJobDto indexInfoSyncJobs = syncJobHistoryService.findHistoryByCursor(condition);
 
