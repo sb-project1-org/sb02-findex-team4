@@ -14,6 +14,7 @@ import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import com.sprint.findex.sb02findexteam4.index.info.repository.IndexInfoRepository;
 import com.sprint.findex.sb02findexteam4.index.info.service.IndexInfoService;
 import com.sprint.findex.sb02findexteam4.sync.dto.IndexDataFromApi;
+import com.sprint.findex.sb02findexteam4.sync.dto.IndexDataSyncRequest;
 import com.sprint.findex.sb02findexteam4.sync.dto.SyncJobHistoryCreateDto;
 import com.sprint.findex.sb02findexteam4.sync.dto.SyncJobHistoryDto;
 import com.sprint.findex.sb02findexteam4.sync.entity.AutoSyncConfig;
@@ -163,5 +164,15 @@ public class BasicSyncJobService implements SyncJobService {
     }
 
     return result;
+  }
+
+  @Override
+  public List<SyncJobHistoryDto> syncIndexInfo() {
+    return List.of();
+  }
+
+  @Override
+  public List<SyncJobHistoryDto> syncIndexData(IndexDataSyncRequest request) {
+    return List.of();
   }
 }
