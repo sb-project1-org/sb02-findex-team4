@@ -34,7 +34,7 @@ public class IndexInfoServiceImpl implements IndexInfoService {
 
   @Override
   @Transactional
-  public IndexInfoDto registerIndexInfo(IndexInfoCreateRequest requestDto) {
+  public IndexInfoDto registerIndexInfo(IndexInfoCreateRequest requestDto, SourceType sourceType) {
     indexInfoValidator.validateForCreate(requestDto);
 
     IndexInfoCreateCommand command = IndexInfoCreateCommand.of(requestDto);
