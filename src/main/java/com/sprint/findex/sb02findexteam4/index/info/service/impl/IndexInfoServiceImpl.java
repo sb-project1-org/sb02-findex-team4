@@ -50,6 +50,20 @@ public class IndexInfoServiceImpl implements IndexInfoService {
   }
 
   @Override
+  public IndexInfo registerIndexInfoFromApi(IndexInfoCreateRequest requestDto) {
+    indexInfoValidator.validateForCreate(requestDto);
+
+    SourceType sourceType = SourceType.OPEN_API;
+    IndexInfoCreateCommand command = IndexInfoCreateCommand.fromApi(requestDto);
+    IndexInfo indexInfo = IndexInfo.create(command, sourceType);
+
+    indexInfoRepository.save(indexInfo);
+    autoSyncConfigService.create(indexInfo);
+
+    return indexInfo;
+  }
+
+  @Override
   public Page<IndexInfoDto> getIndexInfoWithFilters(String classificationName, String indexName,
       Boolean favorite, Pageable pageable) {
 //    if (classificationName != null && indexName != null && favorite != null) {
