@@ -16,8 +16,8 @@ public record Item(
     BigDecimal hipr,
     BigDecimal lopr,
     Long trqu,
-    BigDecimal trPrc,
-    BigDecimal lstgMrktTotAmt
+    Long trPrc,
+    Long lstgMrktTotAmt
 ) {
 
 }
