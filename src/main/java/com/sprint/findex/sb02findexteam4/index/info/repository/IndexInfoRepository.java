@@ -1,6 +1,7 @@
 package com.sprint.findex.sb02findexteam4.index.info.repository;
 
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IndexInfoRepository extends JpaRepository<IndexInfo, Long> {
+
+  List<IndexInfo> findAllByFavoriteTrue();
 
   Page<IndexInfo> findByIndexClassification(String indexClassification, Pageable pageable);
   Page<IndexInfo> findByIndexName(String indexName, Pageable pageable);
