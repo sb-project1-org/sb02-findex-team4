@@ -38,12 +38,11 @@ public class IndexInfoController {
         return ResponseEntity.status(HttpStatus.OK).body(indexInfoDto);
     }
 
-
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateIndexInfo(@PathVariable Long id, @RequestBody IndexInfoUpdateRequest indexInfoUpdateRequest) {
+    public ResponseEntity<IndexInfoDto> updateIndexInfo(@PathVariable Long id, @RequestBody IndexInfoUpdateRequest indexInfoUpdateRequest) {
         try {
-            indexInfoService.updateIndexInfo(id, indexInfoUpdateRequest);
-            return ResponseEntity.ok().build(); // 200 OK
+            IndexInfoDto updatedIndexInfo = indexInfoService.updateIndexInfo(id, indexInfoUpdateRequest); // 반환 값 저장
+            return ResponseEntity.ok(updatedIndexInfo); // 200 OK, 수정된 데이터 반환
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 404 Not Found
         } catch (Exception e) {
