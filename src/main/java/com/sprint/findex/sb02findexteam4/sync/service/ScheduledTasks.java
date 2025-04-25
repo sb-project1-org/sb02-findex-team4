@@ -62,8 +62,10 @@ public class ScheduledTasks {
 
       MarketIndexResponse indexResponse = mapper.readValue(response.body(),
           MarketIndexResponse.class);
+
       List<IndexDataFromApi> dataRequests = IndexDataCreateFromResponse(indexResponse);
       log.info("수동 data 배치 성공 ");
+
       return dataRequests;
     } catch (Exception e) {
       log.error("지수 정보 수집 실패", e);

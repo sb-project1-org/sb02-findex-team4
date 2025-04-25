@@ -1,10 +1,8 @@
 package com.sprint.findex.sb02findexteam4.sync.service;
 
-import com.sprint.findex.sb02findexteam4.exception.AlreadyExistsException;
 import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
 import com.sprint.findex.sb02findexteam4.exception.NotFoundException;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateRequest;
-import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
 import com.sprint.findex.sb02findexteam4.index.data.repository.IndexDataRepository;
 import com.sprint.findex.sb02findexteam4.index.data.service.IndexDataService;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateCommand;
@@ -27,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +48,7 @@ public class BasicSyncJobService implements SyncJobService {
 
   @Override
   @Transactional
-//  @Scheduled(fixedDelay = 20000)
+  @Scheduled(fixedDelay = 20000)
   public void syncAll() {
     String now = TimeUtils.formatedTimeString(Instant.now());
     try {
@@ -104,25 +103,24 @@ public class BasicSyncJobService implements SyncJobService {
           log.info("성공적으로 리스트에 추가함");
         }
       }
-//      if (!indexInfoRepository.existsByIndexName((request.indexName()))) {
-//        log.info("값이 틀림 ");
-//
-//          IndexInfo indexInfo = indexInfoService.registerIndexInfoFromApi(
-//              request, SourceType.OPEN_API);
-//
-//        indexInfoService.registerIndexInfo(request);
-//
-//        log.info("성공적으로 생성함");
-//
-//          SyncJobHistory syncJobHistory = syncJobHistoryService.saveHistory(
-//              SyncJobHistoryCreateDto.forIndexInfo(indexInfo, "system"));
-//
-//          result.add(new SyncJobHistoryDto(syncJobHistory.getId(), syncJobHistory.getJobType(),
-//              syncJobHistory.getIndexInfo().getId(), syncJobHistory.getTargetDate(),
-//              syncJobHistory.getWorker(), syncJobHistory.getJobTime(),
-//              syncJobHistory.getJobResult()));
-//        log.info("성공적으로 리스트에 추가함");
-//      }
+      if (!indexInfoRepository.existsByIndexName(((request.indexName())))) {
+
+        log.info("값이 틀림 ");
+
+        IndexInfo indexInfo = indexInfoService.registerIndexInfoFromApi(
+            IndexInfoCreateCommand.fromApi(request));
+
+        log.info("성공적으로 생성함");
+
+        SyncJobHistory syncJobHistory = syncJobHistoryService.saveHistory(
+            SyncJobHistoryCreateDto.forIndexInfo(indexInfo, "system"));
+
+        result.add(new SyncJobHistoryDto(syncJobHistory.getId(), syncJobHistory.getJobType(),
+            syncJobHistory.getIndexInfo().getId(), syncJobHistory.getTargetDate(),
+            syncJobHistory.getWorker(), syncJobHistory.getJobTime(),
+            syncJobHistory.getJobResult()));
+        log.info("성공적으로 리스트에 추가함");
+      }
     }
     return result;
   }
@@ -140,25 +138,25 @@ public class BasicSyncJobService implements SyncJobService {
     List<SyncJobHistoryDto> result = new ArrayList<>();
     for (IndexDataFromApi indexDataFromApi : apiResponse) {
       for (AutoSyncConfig autoSyncConfig : enableList) {
-        try {
-          IndexDataResponse indexDataResponse = indexDataService.create(
+        if (!indexDataRepository.existsByIndexInfoIdAndBaseDate(
+            autoSyncConfig.getIndexInfo().getId(),
+            TimeUtils.formatedTimeInstantFromApi(indexDataFromApi.baseDate()))) {
+          
+          indexDataService.create(
               IndexDataCreateRequest.from(autoSyncConfig.getIndexInfo().getId(), indexDataFromApi),
               SourceType.OPEN_API);
-          if (indexDataResponse == null) {
-            log.warn("데이터 생성 실패");
-          } else {
-            log.info("성공적으로 생성함");
-            SyncJobHistory syncJobHistory = syncJobHistoryService.saveHistory(
-                SyncJobHistoryCreateDto.forIndexInfo(autoSyncConfig.getIndexInfo(), "system"));
 
-            result.add(new SyncJobHistoryDto(syncJobHistory.getId(), syncJobHistory.getJobType(),
-                syncJobHistory.getIndexInfo().getId(), syncJobHistory.getTargetDate(),
-                syncJobHistory.getWorker(), syncJobHistory.getJobTime(),
-                syncJobHistory.getJobResult()));
-            log.info("성공적으로 리스트에 추가함");
-          }
-        } catch (AlreadyExistsException e) {
-          log.info("값이 이미 존재합니다.");
+          log.info("성공적으로 생성함");
+          SyncJobHistory syncJobHistory = syncJobHistoryService.saveHistory(
+              SyncJobHistoryCreateDto.forIndexInfo(autoSyncConfig.getIndexInfo(), "system"));
+
+          result.add(new SyncJobHistoryDto(syncJobHistory.getId(), syncJobHistory.getJobType(),
+              syncJobHistory.getIndexInfo().getId(), syncJobHistory.getTargetDate(),
+              syncJobHistory.getWorker(), syncJobHistory.getJobTime(),
+              syncJobHistory.getJobResult()));
+          log.info("성공적으로 리스트에 추가함");
+        } else {
+          log.warn("해당 데이터는 이미 존재함");
         }
       }
     }
