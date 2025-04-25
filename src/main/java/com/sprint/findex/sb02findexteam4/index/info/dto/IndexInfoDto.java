@@ -12,9 +12,9 @@ public record IndexInfoDto(
     String indexName,
     Integer employedItemsCount,
     String basePointInTime,
-    double baseIndex,
+    Double baseIndex,
     SourceType sourceType,
-    boolean favorite
+    Boolean favorite
 ) {
 
     public static IndexInfoDto of(IndexInfo indexInfo) {
