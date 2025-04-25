@@ -42,7 +42,6 @@ public class IndexInfoServiceImpl implements IndexInfoService {
     IndexInfo indexInfo = IndexInfo.create(command, sourceType);
     indexInfoRepository.save(indexInfo);
 
-    // 자동연동 엔티티 만들어야 합니다.
     autoSyncConfigService.create(indexInfo);
 
     IndexInfoDto indexInfoDto = IndexInfoDto.of(indexInfo);
@@ -50,14 +49,13 @@ public class IndexInfoServiceImpl implements IndexInfoService {
   }
 
   @Override
-  public IndexInfo registerIndexInfoFromApi(IndexInfoCreateRequest requestDto) {
-    indexInfoValidator.validateForCreate(requestDto);
+  public IndexInfo registerIndexInfoFromApi(IndexInfoCreateCommand command) {
+    indexInfoValidator.validateForCreate(command);
 
     SourceType sourceType = SourceType.OPEN_API;
-    IndexInfoCreateCommand command = IndexInfoCreateCommand.fromApi(requestDto);
     IndexInfo indexInfo = IndexInfo.create(command, sourceType);
-
     indexInfoRepository.save(indexInfo);
+
     autoSyncConfigService.create(indexInfo);
 
     return indexInfo;
