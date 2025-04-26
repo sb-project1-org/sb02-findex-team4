@@ -127,7 +127,7 @@ public class BasicIndexDataService implements IndexDataService {
     List<ChartPoint> ma5 = calculateMovingAverageStrict(pricePoints, MA5DATA_NUM);
     List<ChartPoint> ma20 = calculateMovingAverageStrict(pricePoints, MA20DATA_NUM);
 
-    return new IndexChartDto(pricePoints, ma5, ma20);
+    return new IndexChartDto(indexInfoId, indexInfo.getIndexClassification(), indexInfo.getIndexName(), periodType, pricePoints, ma5, ma20);
   }
 
   @Transactional(readOnly = true)
