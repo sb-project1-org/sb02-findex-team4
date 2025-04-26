@@ -48,7 +48,6 @@ public class ScheduledTasks {
           MarketIndexResponse.class);
       List<IndexInfoCreateRequest> infoRequests = IndexInfoCreateFromResponse(
           indexResponse);
-      log.info("수동 info 배치 성공 ");
       return infoRequests;
     } catch (Exception e) {
       log.error("지수 정보 수집 실패");
@@ -64,7 +63,14 @@ public class ScheduledTasks {
           MarketIndexResponse.class);
 
       List<IndexDataFromApi> dataRequests = IndexDataCreateFromResponse(indexResponse);
-      log.info("수동 data 배치 성공 ");
+
+//      dataRequests.stream().forEach(
+//          data -> log.info(
+//              "bastDateFrom {} baseDateTo {}, marketPrice {}, closingPrice {}, highPrice {}, lowPrice {}, versus {}, fluctuationRate {}",
+//              bastDateFrom, baseDateTo,
+//              data.marketPrice(), data.closingPrice(), data.highPrice(), data.lowPrice(),
+//              data.versus(), data.fluctuationRate())
+//      );
 
       return dataRequests;
     } catch (Exception e) {
@@ -101,6 +107,35 @@ public class ScheduledTasks {
     }
   }
 
+  private HttpResponse<String> getResponse(String indexName, String bastDateFrom,
+      String baseDateTo) {
+    try {
+      URI uri;
+      if (bastDateFrom == null && baseDateTo == null) {
+        uri = getUri();
+      } else {
+        uri = getUri(indexName, bastDateFrom, baseDateTo);
+      }
+
+      HttpRequest request = HttpRequest.newBuilder()
+          .uri(uri)
+          .timeout(Duration.ofSeconds(10))
+          .GET()
+          .build();
+      HttpResponse<String> response = HttpClient.newHttpClient()
+          .send(request, BodyHandlers.ofString());
+      if (response.statusCode() == 200) {
+        log.info("response 성공적으로 불러옴");
+        return response;
+      } else {
+        log.warn("API 호출 오류 code={}, body={}", response.statusCode(), response.body());
+        throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
+      }
+    } catch (IOException | InterruptedException e) {
+      throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
+    }
+  }
+
   private URI getUri() {
     UriComponentsBuilder uriComponentsBuilder = getUriComponent();
     return toUri(uriComponentsBuilder);
@@ -111,12 +146,21 @@ public class ScheduledTasks {
         .queryParam("serviceKey", encodeServiceKey)
         .queryParam("resultType", "json")
         .queryParam("pageNo", 1)
-        .queryParam("numOfRows", 20);
+        .queryParam("numOfRows", 500);
   }
 
   private URI getUri(String bastDateFrom, String baseDateTo) {
     UriComponentsBuilder uriComponentsBuilder = getUriComponent();
-    uriComponentsBuilder.queryParam("beginBasDt", bastDateFrom)
+    uriComponentsBuilder
+        .queryParam("beginBasDt", bastDateFrom)
+        .queryParam("endBasDt", baseDateTo);
+    return toUri(uriComponentsBuilder);
+  }
+
+  private URI getUri(String indexName, String bastDateFrom, String baseDateTo) {
+    UriComponentsBuilder uriComponentsBuilder = getUriComponent();
+    uriComponentsBuilder.queryParam("idxNm", indexName)
+        .queryParam("beginBasDt", bastDateFrom)
         .queryParam("endBasDt", baseDateTo);
     return toUri(uriComponentsBuilder);
   }

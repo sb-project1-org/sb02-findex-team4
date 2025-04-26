@@ -61,13 +61,13 @@ public class BasicSyncJobService implements SyncJobService {
           .orElseThrow(
               () -> new NotFoundException(ErrorCode.SYNC_JOB_HISTORY_NOT_FOUND)
           );
-      log.info("마지막 작업 연동 작업일로부터 현재까지의 연동 기록을 가져옵니다.");
+//      log.info("마지막 작업 연동 작업일로부터 현재까지의 연동 기록을 가져옵니다.");
       String lastDate = TimeUtils.formatedTimeString(syncJobHistory.getJobTime());
       syncIndexInfoFromApi();
       syncIndexDataFromApi(TimeUtils.normalizeToDashedDate(lastDate),
           TimeUtils.normalizeToDashedDate(now));
     } catch (NotFoundException e) {
-      log.warn("연동 작업 기록을 찾을 수 없습니다. 1달간의 연동 기록을 가져옵니다.");
+//      log.warn("연동 작업 기록을 찾을 수 없습니다. 1달간의 연동 기록을 가져옵니다.");
       String oneMonthAgoDate = TimeUtils.oneMonthAgoDateToString();
       syncIndexInfoFromApi();
       syncIndexDataFromApi(oneMonthAgoDate, TimeUtils.normalizeToDashedDate(now));
@@ -78,10 +78,10 @@ public class BasicSyncJobService implements SyncJobService {
   @Transactional
   public List<SyncJobHistoryDto> syncIndexInfoFromApi() {
     List<AutoSyncConfig> enableList = autoSyncConfigRepository.findAllByEnabledIsTrue();
-    log.info("syncIndexInfo 메서드 enabled List 성공적으로 불러옴 - 대상 수 : {}", enableList.size());
+//    log.info("syncIndexInfo 메서드 enabled List 성공적으로 불러옴 - 대상 수 : {}", enableList.size());
 
     List<IndexInfoCreateRequest> apiResponse = scheduledTasks.fetchIndexInfo();
-    log.info("Info api 응답 생성 완료 - 대상 수 : {}", apiResponse.size());
+//    log.info("Info api 응답 생성 완료 - 대상 수 : {}", apiResponse.size());
 
     List<SyncJobHistoryDto> result = new ArrayList<>();
 
@@ -95,7 +95,7 @@ public class BasicSyncJobService implements SyncJobService {
 
           IndexInfo indexInfo = autoSyncConfig.getIndexInfo();
           indexInfo.updateFromDto(IndexInfoCreateCommand.fromApi(request));
-          log.info("Index Info 성공적으로 업데이트됨");
+//          log.info("Index Info 성공적으로 업데이트됨");
 
           SyncJobHistory syncJobHistory = syncJobHistoryService.saveHistory(
               SyncJobHistoryCreateDto.forIndexInfo(indexInfo, "system"));
@@ -108,7 +108,7 @@ public class BasicSyncJobService implements SyncJobService {
       if (!indexInfoRepository.existsByIndexName(((request.indexName())))) {
         IndexInfo indexInfo = indexInfoService.registerIndexInfoFromApi(
             IndexInfoCreateCommand.fromApi(request));
-        log.info("Index Info 성공적으로 생성됨");
+//        log.info("Index Info 성공적으로 생성됨");
 
         SyncJobHistory syncJobHistory = syncJobHistoryService.saveHistory(
             SyncJobHistoryCreateDto.forIndexInfo(indexInfo, "system"));
@@ -117,21 +117,21 @@ public class BasicSyncJobService implements SyncJobService {
       }
     }
 
-    log.info("지수 정보 동기화 작업 완료 : 대상 수 : {}", result.size());
+//    log.info("지수 정보 동기화 작업 완료 : 대상 수 : {}", result.size());
     return result;
   }
 
   @Override
   @Transactional
   public List<SyncJobHistoryDto> syncIndexDataFromApi(String baseDateFrom, String baseDateTo) {
-    log.info("baseDateFrom : {} , baseDateTo: {}", baseDateFrom, baseDateTo);
+//    log.info("baseDateFrom : {} , baseDateTo: {}", baseDateFrom, baseDateTo);
     List<AutoSyncConfig> enableList = autoSyncConfigRepository.findAllByEnabledIsTrue();
-    log.info("syncIndexData 메서드 enabled List 성공적으로 불러옴 - 대상 수 : {}", enableList.size());
+//    log.info("syncIndexData 메서드 enabled List 성공적으로 불러옴 - 대상 수 : {}", enableList.size());
 
     List<IndexDataFromApi> apiResponse = scheduledTasks.fetchIndexData(
         TimeUtils.formatedStringFromDashedDate(baseDateFrom),
         TimeUtils.formatedStringFromDashedDate(baseDateTo));
-    log.info("Data api 응답 생성 완료 - 대상 수 : {}", apiResponse.size());
+//    log.info("Data api 응답 생성 완료 - 대상 수 : {}", apiResponse.size());
 
     List<SyncJobHistoryDto> result = new ArrayList<>();
     for (IndexDataFromApi indexDataFromApi : apiResponse) {
@@ -144,7 +144,7 @@ public class BasicSyncJobService implements SyncJobService {
               IndexDataCreateRequest.from(autoSyncConfig.getIndexInfo().getId(), indexDataFromApi),
               SourceType.OPEN_API);
 
-          log.info("Index Data 성공적으로 생성됨");
+//          log.info("Index Data 성공적으로 생성됨");
           //지수 데이터 연동 기록 남기기
           SyncJobHistory syncJobHistory = syncJobHistoryService.saveHistory(
               SyncJobHistoryCreateDto.forIndexData(autoSyncConfig.getIndexInfo(), "system",
@@ -152,11 +152,11 @@ public class BasicSyncJobService implements SyncJobService {
 
           result.add(SyncJobHistoryDto.fromIndexData(syncJobHistory));
         } else {
-          log.warn("해당 Index Data 가 존재합니다.");
+//          log.warn("해당 Index Data 가 존재합니다.");
         }
       }
     }
-    log.info("지수 데이터 동기화 작업 완료 : 대상 수 : {}", result.size());
+//    log.info("지수 데이터 동기화 작업 완료 : 대상 수 : {}", result.size());
     return result;
   }
 
@@ -188,7 +188,8 @@ public class BasicSyncJobService implements SyncJobService {
         result.add(SyncJobHistoryMapper.toDto(syncJobHistory));
       } else { // create
         log.info("값이 없음 {} ", key);
-        IndexInfo indexInfo = indexInfoService.registerIndexInfoFromApi(IndexInfoCreateCommand.fromApi(request));
+        IndexInfo indexInfo = indexInfoService.registerIndexInfoFromApi(
+            IndexInfoCreateCommand.fromApi(request));
 
         SyncJobHistory syncJobHistory = syncJobHistoryService.saveHistory(
             SyncJobHistoryCreateDto.forIndexInfo(indexInfo, ip));
@@ -199,33 +200,39 @@ public class BasicSyncJobService implements SyncJobService {
 
     return result;
   }
-
+  
   @Transactional
   @Override
   public List<SyncJobHistoryDto> syncIndexData(IndexDataSyncRequest request, String ip) {
+    log.info("사용자 수동 OpenAPI 연동 작업 진행 -> Ip {}, request Base Date From{} Base Date To {}", ip,
+        request.baseDateFrom(), request.baseDateTo());
     // Request에서 받은 indexInfoId를 사용하여 해당 IndexData를 가져옵니다.
     List<IndexData> indexDataList = indexDataRepository.findByIndexInfoIdInAndBaseDateBetween(
         request.indexInfoIds(),
         TimeUtils.instantFromDashedDate(request.baseDateFrom()),
         TimeUtils.instantFromDashedDate(request.baseDateTo())
     );
-    log.info("indexDataList 성공적으로 불러옴");
+    log.info("indexDataList 성공적으로 불러옴 -> 총 불러온 수: {}", indexDataList.size());
+
+    // Request에서 받은 indexInfoId를 가진 지수데이터를 Map에 저장합니다.
+    // 추후 외부 api에서 받은 값이랑 비교하여 해당 맵에 없다면 만들 필요가 없는 데이터입니다.
+    Map<String, IndexData> existingIndexDataMap = indexDataList.stream()
+        .collect(Collectors.toMap(
+            indexData -> indexData.getIndexInfo().getId() + "|" + TimeUtils.formatedTimeString(
+                indexData.getBaseDate()),
+            indexData -> indexData
+        ));
+    log.info("지수 정보에 딸려 있는 지수 데이터의 갯수 : {}", existingIndexDataMap.keySet().size());
 
     // API 가져옵니다.
     List<IndexDataFromApi> apiResponse = scheduledTasks.fetchIndexData(
         TimeUtils.formatedStringFromDashedDate(request.baseDateFrom()),
         TimeUtils.formatedStringFromDashedDate(request.baseDateTo()));
-    log.info("index data api 성공적으로 불러옴");
-
-    Map<String, IndexData> existingIndexDataMap = indexDataList.stream()
-        .collect(Collectors.toMap(
-            indexData -> indexData.getIndexInfo().getId() + "|" + TimeUtils.formatedTimeString(indexData.getBaseDate()),
-            indexData -> indexData
-        ));
+    log.info("index data api 성공적으로 불러옴 -> 총 불러온 수 : {}", apiResponse.size());
 
     List<SyncJobHistoryDto> result = new ArrayList<>();
 
-    for(IndexDataFromApi indexDataFromApi : apiResponse) {
+    for (IndexDataFromApi indexDataFromApi : apiResponse) {
       //해당하는 지수 정보 찾기
       Optional<IndexInfo> optionalIndexInfo = indexInfoRepository.findByIndexClassificationAndIndexName(
           indexDataFromApi.indexClassification(),
@@ -233,20 +240,23 @@ public class BasicSyncJobService implements SyncJobService {
       );
 
       if (optionalIndexInfo.isEmpty()) { // 없으면 Skip
-        log.warn("IndexInfo를 찾을 수 없음: classification={}, name={}", indexDataFromApi.indexClassification(), indexDataFromApi.indexName());
+        log.warn("IndexInfo를 찾을 수 없음: classification={}, name={}",
+            indexDataFromApi.indexClassification(), indexDataFromApi.indexName());
         continue;
       }
 
       IndexInfo indexInfo = optionalIndexInfo.get();
 
       if (request.indexInfoIds().contains(indexInfo.getId())) {
-        String key  = indexInfo.getId() + "|" + TimeUtils.normalizeToDashedDate(indexDataFromApi.baseDate());
+        String key =
+            indexInfo.getId() + "|" + TimeUtils.normalizeToDashedDate(indexDataFromApi.baseDate());
         if (!existingIndexDataMap.containsKey(key)) {
           indexDataService.create(
               IndexDataCreateRequest.from(indexInfo.getId(), indexDataFromApi),
               SourceType.OPEN_API);
 
-          log.info("신규 IndexData 생성: indexInfoId={}, baseDate={}", indexInfo.getId(), indexDataFromApi.baseDate());
+          log.info("신규 IndexData 생성: indexInfoId={}, baseDate={}", indexInfo.getId(),
+              indexDataFromApi.baseDate());
 
           SyncJobHistory syncJobHistory = syncJobHistoryService.saveHistory(
               SyncJobHistoryCreateDto.forIndexData(indexInfo, ip,
@@ -256,7 +266,7 @@ public class BasicSyncJobService implements SyncJobService {
         }
       }
     }
-
+    log.info("연동된 총 갯수 {}", result.size());
     return result;
   }
 }
