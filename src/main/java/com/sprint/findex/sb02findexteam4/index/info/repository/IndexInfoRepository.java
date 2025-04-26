@@ -22,6 +22,7 @@ public interface IndexInfoRepository extends JpaRepository<IndexInfo, Long> {
 //  Page<IndexInfo> findByIndexClassificationAndIndexName(String type, String classification,
 //      Pageable pageable);
 
+
   Optional<IndexInfo> findByIndexClassificationAndIndexName(String indexClassification,
       String indexName);
 
