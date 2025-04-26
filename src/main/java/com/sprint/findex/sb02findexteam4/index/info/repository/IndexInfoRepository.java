@@ -9,9 +9,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface IndexInfoRepository extends JpaRepository<IndexInfo, Long> {
+public interface IndexInfoRepository extends JpaRepository<IndexInfo, Long>, IndexInfoRepositoryCustom {
 
   List<IndexInfo> findAllByFavoriteTrue();
+
 
   Page<IndexInfo> findByIndexClassification(String indexClassification, Pageable pageable);
 
