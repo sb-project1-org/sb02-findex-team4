@@ -54,8 +54,8 @@ public class IndexDataController {
   @GetMapping
   public ResponseEntity<CursorPageResponseIndexDataDto> getIndexDataList(
       @RequestParam(required = false) Long indexInfoId,
-      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) String startDate,
-      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) String endDate,
+      @RequestParam(required = false) String startDate,
+      @RequestParam(required = false) String endDate,
       @RequestParam(required = false) Long idAfter,
       @RequestParam(required = false) String cursor,
       @RequestParam(defaultValue = "baseDate") String sortField,
