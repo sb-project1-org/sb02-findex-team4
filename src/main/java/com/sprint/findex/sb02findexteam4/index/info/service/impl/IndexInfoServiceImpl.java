@@ -3,9 +3,11 @@ package com.sprint.findex.sb02findexteam4.index.info.service.impl;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
 import com.sprint.findex.sb02findexteam4.exception.NormalException;
+import com.sprint.findex.sb02findexteam4.index.info.dto.CursorPageResponseIndexInfoDto;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateCommand;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoDto;
+import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoSearchCondition;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoSummaryDto;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
@@ -18,7 +20,9 @@ import com.sprint.findex.sb02findexteam4.util.TimeUtils;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.util.List;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,15 +75,16 @@ public class IndexInfoServiceImpl implements IndexInfoService {
   }
 
   @Override
-  public Page<IndexInfoDto> getIndexInfoWithFilters(
-      IndexInfoDto indexInfoDto,
-      String sortProperty,
-      boolean isAsc,
-      Long cursorId,
-      int pageSize) {
+  public CursorPageResponseIndexInfoDto findIndexInfoByCursor(IndexInfoSearchCondition condition) {
+    Pageable pageable = createPage(condition.sortDirection(), condition.sortField(),
+        condition.size());
+    return indexInfoRepository.findIndexInfo(condition);
+  }
 
-    return indexInfoRepository
-        .getIndexInfoWithFilters(indexInfoDto, sortProperty, isAsc, cursorId, pageSize);
+  private Pageable createPage(String sortDirection, String sortField, int size) {
+    Sort.Direction Direction = Sort.Direction.fromString(sortDirection);
+    Sort sort = Sort.by(Direction, sortField);
+    return PageRequest.of(0, size, sort);
   }
 
   @Override

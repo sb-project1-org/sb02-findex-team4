@@ -57,5 +57,28 @@ public class CustomQuerydslSortUtils {
     return orders.toArray(new OrderSpecifier[0]);
   }
 
+  public static OrderSpecifier<?>[] createOrderSpecifiers(QIndexInfo indexInfo, Pageable pageable) {
+    List<OrderSpecifier<?>> orders = new ArrayList<>();
+
+    for (Sort.Order sortOrder : pageable.getSort()) {
+      Order direction = sortOrder.isAscending() ? Order.ASC : Order.DESC;
+      String property = sortOrder.getProperty();
+
+      OrderSpecifier<?> orderSpecifier = switch (property) {
+        case "indexClassification" ->
+            new OrderSpecifier<>(direction, indexInfo.indexClassification);
+        case "indexName" -> new OrderSpecifier<>(direction, indexInfo.indexName);
+        case "employedItemsCount" -> new OrderSpecifier<>(direction, indexInfo.employedItemsCount);
+        default -> null; // 알 수 없는 필드는 무시
+      };
+
+      if (orderSpecifier != null) {
+        orders.add(orderSpecifier);
+      }
+    }
+
+    return orders.toArray(new OrderSpecifier[0]);
+  }
+
 
 }

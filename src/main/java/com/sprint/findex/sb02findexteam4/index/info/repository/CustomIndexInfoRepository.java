@@ -1,12 +1,13 @@
 package com.sprint.findex.sb02findexteam4.index.info.repository;
 
+import com.sprint.findex.sb02findexteam4.index.info.dto.CursorPageResponseIndexInfoDto;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoDto;
+import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoSearchCondition;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoSummaryDto;
+import java.util.List;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
-public interface IndexInfoRepositoryCustom {
+public interface CustomIndexInfoRepository {
 
   Page<IndexInfoDto> getIndexInfoWithFilters(
       IndexInfoDto indexInfoDto,
@@ -16,4 +17,6 @@ public interface IndexInfoRepositoryCustom {
       int pageSize);
 
   List<IndexInfoSummaryDto> getIndexInfoSummaries();
+
+  CursorPageResponseIndexInfoDto findIndexInfo(IndexInfoSearchCondition condition);
 }
