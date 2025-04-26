@@ -9,13 +9,17 @@ import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
 import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import java.util.List;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 public interface IndexInfoService {
 
   IndexInfoDto registerIndexInfo(IndexInfoCreateRequest requestDto, SourceType sourceType);
   IndexInfo registerIndexInfoFromApi(IndexInfoCreateCommand command);
-//  Page<IndexInfoSummaryDto> getIndexInfoWithFilters();
+  Page<IndexInfoDto> getIndexInfoWithFilters(
+      IndexInfoDto indexInfoDto,
+      String sortProperty,
+      boolean isAsc,
+      Long cursorId,
+      int pageSize);
   List<IndexInfoSummaryDto> getIndexInfoSummaries();
   IndexInfoDto findById(Long id);
   IndexInfoDto updateIndexInfo(Long id, IndexInfoUpdateRequest updateDto);
