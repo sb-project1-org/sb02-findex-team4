@@ -8,21 +8,21 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface IndexInfoRepository extends JpaRepository<IndexInfo, Long> {
+public interface IndexInfoRepository extends JpaRepository<IndexInfo, Long>, IndexInfoRepositoryCustom {
 
   List<IndexInfo> findAllByFavoriteTrue();
 
-  Page<IndexInfo> findByIndexClassification(String indexClassification, Pageable pageable);
-
-  Page<IndexInfo> findByIndexName(String indexName, Pageable pageable);
-
-  Page<IndexInfo> findByFavorite(boolean favorite, Pageable pageable);
-
-  Page<IndexInfo> findByIndexClassificationAndIndexName(String type, String classification,
-      Pageable pageable);
-
-  Page<IndexInfo> findByIndexClassificationAndIndexNameAndFavorite(String type,
-      String classification, boolean favorite, Pageable pageable);
+//  Page<IndexInfo> findByIndexClassification(String indexClassification, Pageable pageable);
+//
+//  Page<IndexInfo> findByIndexName(String indexName, Pageable pageable);
+//
+//  Page<IndexInfo> findByFavorite(boolean favorite, Pageable pageable);
+//
+//  Page<IndexInfo> findByIndexClassificationAndIndexName(String type, String classification,
+//      Pageable pageable);
+//
+//  Page<IndexInfo> findByIndexClassificationAndIndexNameAndFavorite(String type,
+//      String classification, boolean favorite, Pageable pageable);
 
   boolean existsByIndexName(String indexName);
 }
