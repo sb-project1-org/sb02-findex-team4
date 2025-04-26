@@ -223,6 +223,9 @@ public class BasicIndexDataService implements IndexDataService {
         BigDecimal avg = sum.divide(BigDecimal.valueOf(window), 2, RoundingMode.HALF_UP);
         result.add(new ChartPoint(baseDate.toString(), avg));
       }
+      else{
+        result.add(new ChartPoint(baseDate.toString(), null));
+      }
     }
 
     return result;
