@@ -5,6 +5,7 @@ import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
 import com.sprint.findex.sb02findexteam4.exception.InvalidRequestException;
 import com.sprint.findex.sb02findexteam4.exception.NotFoundException;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
+import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigCondition;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigDto;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigFindCommand;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigUpdateCommand;
@@ -71,7 +72,7 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
       );
       //enabled 상태를 업데이트함
       autoSyncConfig.update(command.enabled());
-      log.info("AutoSyncConfig Update");
+      log.info("AutoSyncConfig Update: {}", command.enabled());
       //build 패턴을 이용해서 dto 감싸기
       return AutoSyncConfigDto.of(autoSyncConfig);
 
@@ -79,6 +80,11 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
     } catch (IllegalArgumentException e) {
       throw new InvalidRequestException(ErrorCode.AUTO_SYNC_BAD_REQUEST);
     }
+  }
+
+  @Override
+  public CursorPageResponseAutoSyncConfigDto findAutoSyncConfig(AutoSyncConfigCondition condition) {
+    return autoSyncConfigRepository.findAutoSyncConfig(condition);
   }
 
   @Override
