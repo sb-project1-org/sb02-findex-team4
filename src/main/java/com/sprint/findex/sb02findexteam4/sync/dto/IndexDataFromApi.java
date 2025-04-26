@@ -5,6 +5,8 @@ import lombok.Builder;
 
 @Builder
 public record IndexDataFromApi(
+    String indexClassification,
+    String indexName,
     String baseDate,
     BigDecimal marketPrice,
     BigDecimal closingPrice,
@@ -19,6 +21,8 @@ public record IndexDataFromApi(
 
   public static IndexDataFromApi of(Item item) {
     return IndexDataFromApi.builder()
+        .indexClassification(item.idxCsf())
+        .indexName(item.idxNm())
         .baseDate(item.basDt())
         .marketPrice(item.mkp())
         .closingPrice(item.clpr())
