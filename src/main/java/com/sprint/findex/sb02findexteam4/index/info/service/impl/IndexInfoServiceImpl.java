@@ -1,8 +1,5 @@
 package com.sprint.findex.sb02findexteam4.index.info.service.impl;
 
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
 import com.sprint.findex.sb02findexteam4.exception.NormalException;
@@ -12,7 +9,6 @@ import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoDto;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoSummaryDto;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
-import com.sprint.findex.sb02findexteam4.index.info.entity.QIndexInfo;
 import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import com.sprint.findex.sb02findexteam4.index.info.repository.IndexInfoRepository;
 import com.sprint.findex.sb02findexteam4.index.info.service.IndexInfoService;
@@ -22,11 +18,7 @@ import com.sprint.findex.sb02findexteam4.util.TimeUtils;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,24 +70,21 @@ public class IndexInfoServiceImpl implements IndexInfoService {
     return indexInfo;
   }
 
-//  @Override
-//  public Page<IndexInfoSummaryDto> getIndexInfoWithFilters() {
-//  }
+  @Override
+  public Page<IndexInfoDto> getIndexInfoWithFilters(
+      IndexInfoDto indexInfoDto,
+      String sortProperty,
+      boolean isAsc,
+      Long cursorId,
+      int pageSize) {
+
+    return indexInfoRepository
+        .getIndexInfoWithFilters(indexInfoDto, sortProperty, isAsc, cursorId, pageSize);
+  }
 
   @Override
   public List<IndexInfoSummaryDto> getIndexInfoSummaries() {
-    QIndexInfo q = QIndexInfo.indexInfo;
-
-    return queryFactory
-        .select(Projections.constructor(
-            IndexInfoSummaryDto.class,
-            q.id,
-            q.indexClassification,
-            q.indexName
-        ))
-        .from(q)
-        .orderBy(q.id.desc())
-        .fetch();
+    return indexInfoRepository.getIndexInfoSummaries();
   }
 
   @Override
