@@ -12,7 +12,6 @@ import com.sprint.findex.sb02findexteam4.sync.dto.SyncJobSearchCondition;
 import com.sprint.findex.sb02findexteam4.sync.entity.QSyncJobHistory;
 import com.sprint.findex.sb02findexteam4.sync.entity.SyncJobHistory;
 import com.sprint.findex.sb02findexteam4.sync.mapper.SyncJobHistoryMapper;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +74,7 @@ public class CustomSyncJobHistoryRepositoryImpl implements CustomSyncJobHistoryR
     private BooleanExpression getCursorPredicate(SyncJobSearchCondition condition) {
         String sortField = condition.sortField();
         String direction = condition.sortDirection();
-        String cursor = condition.cursor();
+        Long cursor = condition.cursor();
 
         if (sortField == null || direction == null){
             throw new NormalException(ErrorCode.INDEX_INFO_BAD_REQUEST);
@@ -83,12 +82,11 @@ public class CustomSyncJobHistoryRepositoryImpl implements CustomSyncJobHistoryR
 
         if (cursor == null) return null;
 
-        Instant cursorValue = Instant.parse(cursor);
         boolean isDesc = "desc".equalsIgnoreCase(direction);
 
-        return "jobTime".equals(sortField)
-            ? (isDesc ? syncJobHistory.jobTime.lt(cursorValue) : syncJobHistory.jobTime.gt(cursorValue))
-            : (isDesc ? syncJobHistory.targetDate.lt(cursorValue) : syncJobHistory.targetDate.gt(cursorValue));
+        return isDesc
+            ? syncJobHistory.id.lt(cursor)
+            : syncJobHistory.id.gt(cursor);
     }
 
     private OrderSpecifier<?> getOrderSpecifier(String sortField, String sortDirection) {

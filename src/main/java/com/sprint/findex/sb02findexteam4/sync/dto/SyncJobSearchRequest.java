@@ -20,5 +20,5 @@ public class SyncJobSearchRequest {
     private Instant jobTimeTo;
     private JobResult status;
     private Long idAfter;
-    private String cursor;
+    private Long cursor;
 }

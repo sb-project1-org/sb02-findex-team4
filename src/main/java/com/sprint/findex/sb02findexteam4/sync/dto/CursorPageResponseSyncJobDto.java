@@ -5,7 +5,7 @@ import java.util.List;
 
 public record CursorPageResponseSyncJobDto(
     List<SyncJobHistoryDto> content,
-    String nextCursor,
+    Long nextCursor,
     Long nextIdAfter,
     int size,
     Long totalElements,
