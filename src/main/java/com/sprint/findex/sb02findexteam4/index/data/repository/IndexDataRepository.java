@@ -3,7 +3,7 @@ package com.sprint.findex.sb02findexteam4.index.data.repository;
 import com.sprint.findex.sb02findexteam4.index.data.entity.IndexData;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,4 +22,6 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long> {
       @Param("indexInfoId") Long indexInfoId,
       @Param("baseDate") LocalDate baseDate
   );
+
+  List<IndexData> findByIndexInfoIdInAndBaseDateBetween(List<Long> indexInfoIds, Instant baseDateFrom, Instant baseDateTo);
 }
