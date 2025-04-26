@@ -9,6 +9,7 @@ import com.sprint.findex.sb02findexteam4.sync.dto.CursorPageResponseAutoSyncConf
 import com.sprint.findex.sb02findexteam4.sync.service.AutoSyncConfigService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auto-sync-configs")
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class AutoSyncConfigController {
   AutoSyncConfigUpdateRequest request) {
     AutoSyncConfigUpdateCommand command = new AutoSyncConfigUpdateCommand(id,
         request.enabled());
-
+    log.info("AutoSyncConfig Update <Controller> -> id {}, enabled {}", id, request.enabled());
     AutoSyncConfigDto result = autoSyncConfigService.update(command);
 
     return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -46,13 +48,16 @@ public class AutoSyncConfigController {
       @RequestParam(value = "size", required = false, defaultValue = "10") int size,
       HttpServletRequest httpRequest
   ) {
+    log.info(
+        "AutoSyncConfig find <Controller> -> IndexInfoId {}, enabled {}, idAfter {}, cursor {}",
+        request.getIndexInfoId(), request.isEnabled(), request.getIdAfter(), request.getCursor());
     boolean enabledProvided = httpRequest.getParameterMap().containsKey("enabled");
 
     Boolean enabledCond = enabledProvided ? request.isEnabled() : null;
 
     AutoSyncConfigCondition condition = AutoSyncConfigCondition.from(request, enabledCond,
         sortField, sortDirection, size);
-    CursorPageResponseAutoSyncConfigDto response = autoSyncConfigService.findAutoSyncConfig(
+    CursorPageResponseAutoSyncConfigDto response = autoSyncConfigService.findAll(
         condition);
 
     return ResponseEntity.status(HttpStatus.OK).body(response);

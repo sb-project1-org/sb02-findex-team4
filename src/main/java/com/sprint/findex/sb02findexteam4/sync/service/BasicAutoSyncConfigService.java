@@ -7,17 +7,12 @@ import com.sprint.findex.sb02findexteam4.exception.NotFoundException;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigCondition;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigDto;
-import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigFindCommand;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigUpdateCommand;
 import com.sprint.findex.sb02findexteam4.sync.dto.CursorPageResponseAutoSyncConfigDto;
 import com.sprint.findex.sb02findexteam4.sync.entity.AutoSyncConfig;
 import com.sprint.findex.sb02findexteam4.sync.repository.AutoSyncConfigRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,80 +78,9 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
   }
 
   @Override
-  public CursorPageResponseAutoSyncConfigDto findAutoSyncConfig(AutoSyncConfigCondition condition) {
+  public CursorPageResponseAutoSyncConfigDto findAll(AutoSyncConfigCondition condition) {
     return autoSyncConfigRepository.findAutoSyncConfig(condition);
   }
-
-  @Override
-  @Transactional(readOnly = true)
-  public CursorPageResponseAutoSyncConfigDto findAll(AutoSyncConfigFindCommand command) {
-    Pageable pageable = createPage(command.sortDirection(), command.sortField(), command.size());
-
-    Slice<AutoSyncConfigDto> slice = autoSyncConfigRepository.findAll(pageable)
-        .map(AutoSyncConfigDto::of);
-
-    return fromSlice(slice, command.sortField());
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public CursorPageResponseAutoSyncConfigDto findAllByInfoId(AutoSyncConfigFindCommand command) {
-    Pageable pageable = createPage(command.sortDirection(), command.sortField(), command.size());
-    Slice<AutoSyncConfigDto> slice = autoSyncConfigRepository.findAllByIndexInfo_Id(
-        command.indexInfoId(), pageable).map(AutoSyncConfigDto::of);
-
-    return fromSlice(slice, command.sortField());
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public CursorPageResponseAutoSyncConfigDto findAllByEnabled(AutoSyncConfigFindCommand command) {
-    Pageable pageable = createPage(command.sortDirection(), command.sortField(), command.size());
-
-    Slice<AutoSyncConfigDto> slice = autoSyncConfigRepository.findAllByEnabled(command.enabled(),
-        pageable).map(AutoSyncConfigDto::of);
-
-    return fromSlice(slice, command.sortField());
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public CursorPageResponseAutoSyncConfigDto findAllByInfoIdAndEnabled(
-      AutoSyncConfigFindCommand command) {
-    Pageable pageable = createPage(command.sortDirection(), command.sortField(), command.size());
-    Slice<AutoSyncConfigDto> slice = autoSyncConfigRepository.findAllByIndexInfoIdAndEnabled
-            (command.indexInfoId(), command.enabled(), pageable)
-        .map(AutoSyncConfigDto::of);
-    return fromSlice(slice, command.sortField());
-  }
-
-  private Pageable createPage(String sortDirection, String sortField, int size) {
-    Sort.Direction Direction = Sort.Direction.fromString(sortDirection);
-    Sort sort = Sort.by(Direction, sortField);
-    return PageRequest.of(0, size, sort);
-  }
-
-  private CursorPageResponseAutoSyncConfigDto fromSlice(
-      Slice<AutoSyncConfigDto> slice,
-      String sortField) {
-    String nextCursor = null;
-    Long nextIdAfter = null;
-    if (!slice.getContent().isEmpty()) {
-      int lastIndex = slice.getNumberOfElements() - 1;
-      AutoSyncConfigDto configDto = slice.getContent().get(lastIndex);
-      nextIdAfter = configDto.id();
-
-      if ("enabled".equals(sortField)) {
-        nextCursor = String.valueOf(configDto.enabled());
-      } else if ("indexInfo.indexName".equals(sortField)) {
-        nextCursor = configDto.id().toString();
-      }
-    }
-
-    return new CursorPageResponseAutoSyncConfigDto(slice.getContent(), nextCursor, nextIdAfter,
-        slice.getSize(), (long) slice.getNumberOfElements(), slice.hasNext());
-  }
-
 
   @Override
   @Transactional
