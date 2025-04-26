@@ -64,14 +64,23 @@ public class ScheduledTasks {
 
       List<IndexDataFromApi> dataRequests = IndexDataCreateFromResponse(indexResponse);
 
-//      dataRequests.stream().forEach(
-//          data -> log.info(
-//              "bastDateFrom {} baseDateTo {}, marketPrice {}, closingPrice {}, highPrice {}, lowPrice {}, versus {}, fluctuationRate {}",
-//              bastDateFrom, baseDateTo,
-//              data.marketPrice(), data.closingPrice(), data.highPrice(), data.lowPrice(),
-//              data.versus(), data.fluctuationRate())
-//      );
+      return dataRequests;
+    } catch (Exception e) {
+      log.error("지수 데이터 수집 실패");
+      throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
+    }
+  }
 
+  public List<IndexDataFromApi> fetchIndexData(String indexName, String bastDateFrom,
+      String baseDateTo) {
+    try {
+      HttpResponse<String> response = getResponse(indexName, bastDateFrom, baseDateTo);
+      log.info("성공적으로 응답 구함");
+      MarketIndexResponse indexResponse = mapper.readValue(response.body(),
+          MarketIndexResponse.class);
+      log.info("성공적으로 mapper");
+      List<IndexDataFromApi> dataRequests = IndexDataCreateFromResponse(indexResponse);
+      log.info("성공적으로 data api 만듬");
       return dataRequests;
     } catch (Exception e) {
       log.error("지수 데이터 수집 실패");
@@ -122,8 +131,11 @@ public class ScheduledTasks {
           .timeout(Duration.ofSeconds(10))
           .GET()
           .build();
+      log.info("request 성공적으로 만듬");
+
       HttpResponse<String> response = HttpClient.newHttpClient()
           .send(request, BodyHandlers.ofString());
+
       if (response.statusCode() == 200) {
         log.info("response 성공적으로 불러옴");
         return response;
@@ -159,9 +171,11 @@ public class ScheduledTasks {
 
   private URI getUri(String indexName, String bastDateFrom, String baseDateTo) {
     UriComponentsBuilder uriComponentsBuilder = getUriComponent();
+    log.info("get URI 구하는 중");
     uriComponentsBuilder.queryParam("idxNm", indexName)
         .queryParam("beginBasDt", bastDateFrom)
         .queryParam("endBasDt", baseDateTo);
+    log.info("get URI 구함");
     return toUri(uriComponentsBuilder);
   }
 
