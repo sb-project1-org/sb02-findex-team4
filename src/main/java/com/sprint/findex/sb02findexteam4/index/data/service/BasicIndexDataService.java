@@ -97,8 +97,8 @@ public class BasicIndexDataService implements IndexDataService {
 
     return new CursorPageResponseIndexDataDto(
         contents,
-        nextIdAfter,
         nextCursor,
+        nextIdAfter,
         command.size(),
         contents.size(),
         hasNext

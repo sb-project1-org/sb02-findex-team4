@@ -9,7 +9,6 @@ import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexPerformanceDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.RankedIndexPerformanceDto;
-import com.sprint.findex.sb02findexteam4.index.data.entity.IndexData;
 import com.sprint.findex.sb02findexteam4.index.data.entity.PeriodType;
 import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import java.time.Instant;
