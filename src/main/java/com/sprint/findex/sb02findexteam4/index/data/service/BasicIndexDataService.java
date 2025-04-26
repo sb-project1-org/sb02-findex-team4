@@ -7,7 +7,10 @@ import static com.sprint.findex.sb02findexteam4.exception.ErrorCode.INDEX_INFO_N
 import com.sprint.findex.sb02findexteam4.exception.AlreadyExistsException;
 import com.sprint.findex.sb02findexteam4.exception.NotFoundException;
 import com.sprint.findex.sb02findexteam4.index.data.dto.ChartPoint;
+import com.sprint.findex.sb02findexteam4.index.data.dto.CursorPageResponseIndexDataDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexChartDto;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataDto;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataFindCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexPerformanceDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.RankedIndexPerformanceDto;
 import com.sprint.findex.sb02findexteam4.index.data.entity.IndexData;
@@ -72,6 +75,30 @@ public class BasicIndexDataService implements IndexDataService {
 
     IndexData createdIndexData = indexDataRepository.save(indexData.update(request));
     return IndexDataResponse.from(createdIndexData);
+  }
+
+  @Transactional(readOnly = true)
+  @Override
+  public CursorPageResponseIndexDataDto getIndexDataList(IndexDataFindCommand command) {
+    List<IndexData> result = indexDataRepository.findWithConditions(command);
+    boolean hasNext = result.size() > command.size();
+    if (hasNext) result.remove(result.size() - 1);
+
+    List<IndexDataDto> contents = result.stream()
+        .map(IndexDataDto::from)
+        .collect(Collectors.toList());
+
+    Long nextIdAfter = contents.isEmpty() ? null : contents.get(contents.size() - 1).id();
+    String nextCursor = nextIdAfter != null ? nextIdAfter.toString() : null;
+
+    return new CursorPageResponseIndexDataDto(
+        contents,
+        nextIdAfter,
+        nextCursor,
+        command.size(),
+        contents.size(),
+        hasNext
+    );
   }
 
   @Transactional(readOnly = true)
