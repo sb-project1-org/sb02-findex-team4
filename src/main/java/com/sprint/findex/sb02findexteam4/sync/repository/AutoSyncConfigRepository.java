@@ -7,7 +7,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface AutoSyncConfigRepository extends JpaRepository<AutoSyncConfig, Long> {
+public interface AutoSyncConfigRepository extends JpaRepository<AutoSyncConfig, Long>,
+    CustomAutoSyncConfigRepository {
 
   boolean existsByIndexInfo_Id(Long indexInfoId);
 
