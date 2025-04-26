@@ -25,7 +25,6 @@ import com.sprint.findex.sb02findexteam4.sync.repository.AutoSyncConfigRepositor
 import com.sprint.findex.sb02findexteam4.sync.repository.SyncJobHistoryRepository;
 import com.sprint.findex.sb02findexteam4.util.TimeUtils;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,7 +54,7 @@ public class BasicSyncJobService implements SyncJobService {
 
   @Override
   @Transactional
-  @Scheduled(fixedDelay = 20000)
+//  @Scheduled(fixedDelay = 20000)
   public void syncAll() {
     String now = TimeUtils.formatedTimeString(Instant.now());
     try {
@@ -203,7 +201,7 @@ public class BasicSyncJobService implements SyncJobService {
 
     return result;
   }
-//
+
 //  @Transactional
 //  @Override
 //  public List<SyncJobHistoryDto> syncIndexData(IndexDataSyncRequest request, String ip) {
@@ -292,14 +290,26 @@ public class BasicSyncJobService implements SyncJobService {
     for (IndexInfo indexInfo : indexInfoList) {
       //지수 정보의 이름, DateFrom, DateTo를 통해서 api 응답을 받는다.
       List<IndexDataFromApi> apiResponse = scheduledTasks.fetchIndexData(
-          indexInfo.getIndexName(), request.baseDateFrom(),
-          request.baseDateTo());
+          indexInfo.getIndexName(),
+          TimeUtils.formatedStringFromDashedDate(request.baseDateFrom()),
+          TimeUtils.formatedStringFromDashedDate(request.baseDateTo())
+      );
       log.info("생성된 api 데이터 목록의 수 : {}", apiResponse.size());
 
       Long indexInfoId = indexInfo.getId();
       //지수 데이터를 하나씩 순회를 시작한다.
       for (IndexDataFromApi indexDataFromApi : apiResponse) {
         Instant baseDateFromApi = TimeUtils.formatedTimeInstantFromApi(indexDataFromApi.baseDate());
+        IndexInfo indexInfoFromApi = indexInfoRepository.findByIndexClassificationAndIndexName(indexDataFromApi.indexClassification(), indexDataFromApi.indexName()).orElse(null);
+        if (indexInfoFromApi == null) {
+          log.warn("IndexInfo를 찾을 수 없음: classification={}, name={}",
+              indexDataFromApi.indexClassification(), indexDataFromApi.indexName());
+          continue;
+        }
+        if (!indexInfoFromApi.getId().equals(indexInfoId)) {
+          log.warn("IndexInfo ID 불일치: apiId={}, requestId={}", indexInfoFromApi.getId(), indexInfoId);
+          continue;
+        }
         //만약 지수 정보 아이디와 날짜가 일치하지 않는다면
         if (!indexDataRepository.existsByIndexInfoIdAndBaseDate(indexInfoId, baseDateFromApi)) {
           log.info("지수 정보, 날짜 불일치로 인한 지수 데이터 생성");
@@ -316,9 +326,9 @@ public class BasicSyncJobService implements SyncJobService {
           result.add(SyncJobHistoryMapper.toDto(syncJobHistory));
         } else {  // 만약 지수 정보 아이디와 날짜가 일치하면
           log.info("지수 정보, 날짜 일치로 인한 지수 데이터 업데이트");
-          IndexData indexData = indexDataRepository.findByIndexInfoIdAndBaseDateOnlyDateMatch(
+          IndexData indexData = indexDataRepository.findByIndexInfoIdAndBaseDate(
               indexInfoId,
-              LocalDate.from(baseDateFromApi)).orElse(null);
+              baseDateFromApi).orElse(null);
           if (indexData != null) {
             IndexData update = indexData.update(IndexDataUpdateRequest.fromApi(indexDataFromApi));
             log.info("지수 데이터 업데이트 : {}", update.getId());

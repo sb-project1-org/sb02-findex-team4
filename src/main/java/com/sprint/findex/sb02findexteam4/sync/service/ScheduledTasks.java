@@ -172,7 +172,10 @@ public class ScheduledTasks {
   private URI getUri(String indexName, String bastDateFrom, String baseDateTo) {
     UriComponentsBuilder uriComponentsBuilder = getUriComponent();
     log.info("get URI 구하는 중");
-    uriComponentsBuilder.queryParam("idxNm", indexName)
+
+    String encodedIndexName = URLEncoder.encode(indexName, StandardCharsets.UTF_8);
+
+    uriComponentsBuilder.queryParam("idxNm", encodedIndexName)
         .queryParam("beginBasDt", bastDateFrom)
         .queryParam("endBasDt", baseDateTo);
     log.info("get URI 구함");
