@@ -12,6 +12,7 @@ import com.sprint.findex.sb02findexteam4.sync.dto.CursorPageResponseAutoSyncConf
 import com.sprint.findex.sb02findexteam4.sync.entity.AutoSyncConfig;
 import com.sprint.findex.sb02findexteam4.sync.repository.AutoSyncConfigRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BasicAutoSyncConfigService implements AutoSyncConfigService {
 
   private final AutoSyncConfigRepository autoSyncConfigRepository;
@@ -35,8 +37,8 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
 
       AutoSyncConfig autoSyncConfig = AutoSyncConfig.create(indexInfo);
       autoSyncConfigRepository.save(autoSyncConfig);
+      log.info("AutoSyncConfig Create {}", indexInfo);
       return AutoSyncConfigDto.of(autoSyncConfig);
-
     } catch (IllegalArgumentException e) {
       throw new InvalidRequestException(ErrorCode.AUTO_SYNC_BAD_REQUEST);
     }
@@ -51,8 +53,8 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
     try {
       AutoSyncConfig autoSyncConfig = AutoSyncConfig.create(indexInfo, enabled);
       autoSyncConfigRepository.save(autoSyncConfig);
+      log.info("AutoSyncConfig Create {} {}", indexInfo, enabled);
       return AutoSyncConfigDto.of(autoSyncConfig);
-
     } catch (IllegalArgumentException e) {
       throw new InvalidRequestException(ErrorCode.AUTO_SYNC_BAD_REQUEST);
     }
@@ -69,7 +71,7 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
       );
       //enabled 상태를 업데이트함
       autoSyncConfig.update(command.enabled());
-
+      log.info("AutoSyncConfig Update");
       //build 패턴을 이용해서 dto 감싸기
       return AutoSyncConfigDto.of(autoSyncConfig);
 
