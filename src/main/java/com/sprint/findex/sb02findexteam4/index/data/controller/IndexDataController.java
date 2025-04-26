@@ -5,6 +5,7 @@ import com.sprint.findex.sb02findexteam4.index.data.dto.CursorPageResponseIndexD
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexChartDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataFindCommand;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCsvExportCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexPerformanceDto;
@@ -12,10 +13,11 @@ import com.sprint.findex.sb02findexteam4.index.data.dto.RankedIndexPerformanceDt
 import com.sprint.findex.sb02findexteam4.index.data.entity.PeriodType;
 import com.sprint.findex.sb02findexteam4.index.data.service.IndexDataService;
 import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,20 +30,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/index-data")
 public class IndexDataController {
 
   private final IndexDataService indexDataService;
 
-  public IndexDataController(IndexDataService indexDataService) {
-    this.indexDataService = indexDataService;
-  }
-
   @PostMapping
   public ResponseEntity<IndexDataResponse> createIndexData(
       @RequestBody IndexDataCreateRequest request) {
     IndexDataResponse createdIndexData = indexDataService.create(request, SourceType.USER);
-    return ResponseEntity.status(HttpStatus.CREATED).body(createdIndexData); //201 Created
+    return ResponseEntity.status(HttpStatus.CREATED).body(createdIndexData);
   }
 
   @PatchMapping("/{id}")
@@ -93,6 +92,30 @@ public class IndexDataController {
     List<RankedIndexPerformanceDto> result = indexDataService.getIndexPerformanceRank(indexInfoId,
         periodType, limit);
     return ResponseEntity.ok(result);
+  }
+
+  @GetMapping("/export/csv")
+  public ResponseEntity<byte[]> exportCsv(
+      @RequestParam(required = false) Long indexInfoId,
+      @RequestParam(required = false) String startDate,
+      @RequestParam(required = false) String endDate,
+      @RequestParam(defaultValue = "baseDate") String sortField,
+      @RequestParam(defaultValue = "desc") String sortDirection
+  ) {
+    IndexDataCsvExportCommand command = IndexDataCsvExportCommand.builder()
+        .indexInfoId(indexInfoId)
+        .startDate(startDate)
+        .endDate(endDate)
+        .sortField(sortField)
+        .sortDirection(sortDirection)
+        .build();
+
+    byte[] csvData = indexDataService.exportCsv(command);
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=index-data-export.csv")
+        .contentType(MediaType.parseMediaType("text/csv"))
+        .body(csvData);
   }
 
   @DeleteMapping("/{id}")

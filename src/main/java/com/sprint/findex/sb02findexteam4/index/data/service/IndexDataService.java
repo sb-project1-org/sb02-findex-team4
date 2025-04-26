@@ -3,6 +3,7 @@ package com.sprint.findex.sb02findexteam4.index.data.service;
 import com.sprint.findex.sb02findexteam4.index.data.dto.CursorPageResponseIndexDataDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexChartDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateRequest;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCsvExportCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataFindCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
@@ -21,6 +22,8 @@ public interface IndexDataService {
   IndexDataResponse update(Long id, IndexDataUpdateRequest request);
 
   CursorPageResponseIndexDataDto getIndexDataList(IndexDataFindCommand command);
+
+  byte[] exportCsv(IndexDataCsvExportCommand command);
 
   IndexChartDto getIndexChart(Long indexInfoId, PeriodType periodType);
 
