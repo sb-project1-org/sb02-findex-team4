@@ -51,14 +51,6 @@ public class AutoSyncConfig {
     this.enabled = newEnabled;
   }
 
-  public void enableAutoSync() {
-    this.enabled = true;
-  }
-
-  public void disableAutoSync() {
-    this.enabled = false;
-  }
-
   public boolean isAutoSyncEnabled() {
     return enabled;
   }

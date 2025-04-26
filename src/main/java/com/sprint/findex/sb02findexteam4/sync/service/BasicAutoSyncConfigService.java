@@ -5,22 +5,20 @@ import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
 import com.sprint.findex.sb02findexteam4.exception.InvalidRequestException;
 import com.sprint.findex.sb02findexteam4.exception.NotFoundException;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
+import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigCondition;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigDto;
-import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigFindCommand;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigUpdateCommand;
 import com.sprint.findex.sb02findexteam4.sync.dto.CursorPageResponseAutoSyncConfigDto;
 import com.sprint.findex.sb02findexteam4.sync.entity.AutoSyncConfig;
 import com.sprint.findex.sb02findexteam4.sync.repository.AutoSyncConfigRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BasicAutoSyncConfigService implements AutoSyncConfigService {
 
   private final AutoSyncConfigRepository autoSyncConfigRepository;
@@ -35,8 +33,8 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
 
       AutoSyncConfig autoSyncConfig = AutoSyncConfig.create(indexInfo);
       autoSyncConfigRepository.save(autoSyncConfig);
+      log.info("AutoSyncConfig Create {}", indexInfo);
       return AutoSyncConfigDto.of(autoSyncConfig);
-
     } catch (IllegalArgumentException e) {
       throw new InvalidRequestException(ErrorCode.AUTO_SYNC_BAD_REQUEST);
     }
@@ -51,8 +49,8 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
     try {
       AutoSyncConfig autoSyncConfig = AutoSyncConfig.create(indexInfo, enabled);
       autoSyncConfigRepository.save(autoSyncConfig);
+      log.info("AutoSyncConfig Create {} {}", indexInfo, enabled);
       return AutoSyncConfigDto.of(autoSyncConfig);
-
     } catch (IllegalArgumentException e) {
       throw new InvalidRequestException(ErrorCode.AUTO_SYNC_BAD_REQUEST);
     }
@@ -69,7 +67,7 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
       );
       //enabled 상태를 업데이트함
       autoSyncConfig.update(command.enabled());
-
+      log.info("AutoSyncConfig Update: {}", command.enabled());
       //build 패턴을 이용해서 dto 감싸기
       return AutoSyncConfigDto.of(autoSyncConfig);
 
@@ -80,75 +78,9 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService {
   }
 
   @Override
-  @Transactional(readOnly = true)
-  public CursorPageResponseAutoSyncConfigDto findAll(AutoSyncConfigFindCommand command) {
-    Pageable pageable = createPage(command.sortDirection(), command.sortField(), command.size());
-
-    Slice<AutoSyncConfigDto> slice = autoSyncConfigRepository.findAll(pageable)
-        .map(AutoSyncConfigDto::of);
-
-    return fromSlice(slice, command.sortField());
+  public CursorPageResponseAutoSyncConfigDto findAll(AutoSyncConfigCondition condition) {
+    return autoSyncConfigRepository.findAutoSyncConfig(condition);
   }
-
-  @Override
-  @Transactional(readOnly = true)
-  public CursorPageResponseAutoSyncConfigDto findAllByInfoId(AutoSyncConfigFindCommand command) {
-    Pageable pageable = createPage(command.sortDirection(), command.sortField(), command.size());
-    Slice<AutoSyncConfigDto> slice = autoSyncConfigRepository.findAllByIndexInfo_Id(
-        command.indexInfoId(), pageable).map(AutoSyncConfigDto::of);
-
-    return fromSlice(slice, command.sortField());
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public CursorPageResponseAutoSyncConfigDto findAllByEnabled(AutoSyncConfigFindCommand command) {
-    Pageable pageable = createPage(command.sortDirection(), command.sortField(), command.size());
-
-    Slice<AutoSyncConfigDto> slice = autoSyncConfigRepository.findAllByEnabled(command.enabled(),
-        pageable).map(AutoSyncConfigDto::of);
-
-    return fromSlice(slice, command.sortField());
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public CursorPageResponseAutoSyncConfigDto findAllByInfoIdAndEnabled(
-      AutoSyncConfigFindCommand command) {
-    Pageable pageable = createPage(command.sortDirection(), command.sortField(), command.size());
-    Slice<AutoSyncConfigDto> slice = autoSyncConfigRepository.findAllByIndexInfoIdAndEnabled
-            (command.indexInfoId(), command.enabled(), pageable)
-        .map(AutoSyncConfigDto::of);
-    return fromSlice(slice, command.sortField());
-  }
-
-  private Pageable createPage(String sortDirection, String sortField, int size) {
-    Sort.Direction Direction = Sort.Direction.fromString(sortDirection);
-    Sort sort = Sort.by(Direction, sortField);
-    return PageRequest.of(0, size, sort);
-  }
-
-  private CursorPageResponseAutoSyncConfigDto fromSlice(
-      Slice<AutoSyncConfigDto> slice,
-      String sortField) {
-    String nextCursor = null;
-    Long nextIdAfter = null;
-    if (!slice.getContent().isEmpty()) {
-      int lastIndex = slice.getNumberOfElements() - 1;
-      AutoSyncConfigDto configDto = slice.getContent().get(lastIndex);
-      nextIdAfter = configDto.id();
-
-      if ("enabled".equals(sortField)) {
-        nextCursor = String.valueOf(configDto.enabled());
-      } else if ("indexInfo.indexName".equals(sortField)) {
-        nextCursor = configDto.id().toString();
-      }
-    }
-
-    return new CursorPageResponseAutoSyncConfigDto(slice.getContent(), nextCursor, nextIdAfter,
-        slice.getSize(), (long) slice.getNumberOfElements(), slice.hasNext());
-  }
-
 
   @Override
   @Transactional

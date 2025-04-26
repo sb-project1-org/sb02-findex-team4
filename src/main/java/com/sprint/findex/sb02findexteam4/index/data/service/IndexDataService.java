@@ -1,9 +1,14 @@
 package com.sprint.findex.sb02findexteam4.index.data.service;
 
+import com.sprint.findex.sb02findexteam4.index.data.dto.CursorPageResponseIndexDataDto;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexChartDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateRequest;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataFindCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexPerformanceDto;
+import com.sprint.findex.sb02findexteam4.index.data.dto.RankedIndexPerformanceDto;
+import com.sprint.findex.sb02findexteam4.index.data.entity.IndexData;
 import com.sprint.findex.sb02findexteam4.index.data.entity.PeriodType;
 import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import java.time.Instant;
@@ -15,7 +20,14 @@ public interface IndexDataService {
 
   IndexDataResponse update(Long id, IndexDataUpdateRequest request);
 
+  CursorPageResponseIndexDataDto getIndexDataList(IndexDataFindCommand command);
+
+  IndexChartDto getIndexChart(Long indexInfoId, PeriodType periodType);
+
   List<IndexPerformanceDto> getFavoriteIndexPerformances(PeriodType periodType);
+
+  List<RankedIndexPerformanceDto> getIndexPerformanceRank(Long indexInfoId,
+      PeriodType periodType, int limit);
 
   void delete(Long id);
 

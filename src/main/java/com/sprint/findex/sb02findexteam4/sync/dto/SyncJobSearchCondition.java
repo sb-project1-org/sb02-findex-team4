@@ -26,25 +26,25 @@ public record SyncJobSearchCondition(
         String sortDirection,
         int size
     ) {
-        Instant baseDateFrom = request.baseDateFrom() != null
-            ? TimeUtils.formatedTimeInstant(request.baseDateFrom())
+        Instant baseDateFrom = request.getBaseDateFrom() != null
+            ? TimeUtils.formatedTimeInstant(request.getBaseDateFrom())
             : null;
 
-        Instant baseDateTo = request.baseDateTo() != null
-            ? TimeUtils.formatedTimeInstant(request.baseDateTo())
+        Instant baseDateTo = request.getBaseDateTo() != null
+            ? TimeUtils.formatedTimeInstant(request.getBaseDateTo())
             : null;
 
         return new SyncJobSearchCondition(
-            request.jobType(),
-            request.indexInfoId(),
+            request.getJobType(),
+            request.getIndexInfoId(),
             baseDateFrom,
             baseDateTo,
-            request.worker(),
-            request.jobTimeFrom(),
-            request.jobTimeTo(),
-            request.status(),
-            request.idAfter(),
-            request.cursor(),
+            request.getWorker(),
+            request.getJobTimeFrom(),
+            request.getJobTimeTo(),
+            request.getStatus(),
+            request.getIdAfter(),
+            request.getCursor(),
             sortField,
             sortDirection,
             size
