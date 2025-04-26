@@ -1,6 +1,7 @@
 package com.sprint.findex.sb02findexteam4.index.data.controller;
 
 
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexChartDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
@@ -37,7 +38,6 @@ public class IndexDataController {
     public ResponseEntity<IndexDataResponse> createIndexData(@RequestBody IndexDataCreateRequest request) {
         IndexDataResponse createdIndexData = indexDataService.create(request, SourceType.USER);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdIndexData); //201 Created
-
     }
 
     @PatchMapping("/{id}")
@@ -52,7 +52,15 @@ public class IndexDataController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); //500 Internal Server Error
         }
+    }
 
+    @GetMapping("/{id}/chart")
+    public ResponseEntity<IndexChartDto> getChartData(
+        @PathVariable("id") Long indexInfoId,
+        @RequestParam(value = "periodType", defaultValue = "DAILY") PeriodType periodType) {
+
+        IndexChartDto chartData = indexDataService.getIndexChart(indexInfoId, periodType);
+        return ResponseEntity.ok(chartData);
     }
 
     @GetMapping("/performance/favorite")

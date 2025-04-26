@@ -1,5 +1,6 @@
 package com.sprint.findex.sb02findexteam4.index.data.service;
 
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexChartDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
@@ -15,6 +16,8 @@ public interface IndexDataService {
   IndexDataResponse create(IndexDataCreateRequest request, SourceType sourceType);
 
   IndexDataResponse update(Long id, IndexDataUpdateRequest request);
+
+  IndexChartDto getIndexChart(Long indexInfoId, PeriodType periodType);
 
   List<IndexPerformanceDto> getFavoriteIndexPerformances(PeriodType periodType);
 
