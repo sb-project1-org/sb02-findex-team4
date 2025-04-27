@@ -93,6 +93,33 @@ public class IndexDataRepositoryImpl implements IndexDataRepositoryCustom {
   }
 
   @Override
+  public Long countWithConditions(IndexDataFindCommand command) {
+    BooleanBuilder builder = new BooleanBuilder();
+
+    if (command.indexInfoId() != null) {
+      builder.and(indexData.indexInfo.id.eq(command.indexInfoId()));
+    }
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    if (command.startDate() != null) {
+      LocalDate startDate = LocalDate.parse(command.startDate(), formatter);
+      builder.and(indexData.baseDate.goe(startDate.atStartOfDay(ZoneId.of("Asia/Seoul")).toInstant()));
+    }
+
+    if (command.endDate() != null) {
+      LocalDate endDate = LocalDate.parse(command.endDate(), formatter);
+      builder.and(indexData.baseDate.loe(endDate.atTime(23, 59, 59).atZone(ZoneId.of("Asia/Seoul")).toInstant()));
+    }
+
+    return queryFactory
+        .select(indexData.count())
+        .from(indexData)
+        .where(builder)
+        .fetchOne();
+  }
+
+  @Override
   public List<IndexData> findAllForCsvExport(IndexDataCsvExportCommand command) {
     BooleanBuilder builder = new BooleanBuilder();
 
