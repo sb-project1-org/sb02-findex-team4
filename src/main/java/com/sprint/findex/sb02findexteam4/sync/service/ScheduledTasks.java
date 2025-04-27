@@ -48,7 +48,6 @@ public class ScheduledTasks {
           MarketIndexResponse.class);
       List<IndexInfoCreateRequest> infoRequests = IndexInfoCreateFromResponse(
           indexResponse);
-      log.info("수동 info 배치 성공 ");
       return infoRequests;
     } catch (Exception e) {
       log.error("지수 정보 수집 실패");
@@ -64,8 +63,24 @@ public class ScheduledTasks {
           MarketIndexResponse.class);
 
       List<IndexDataFromApi> dataRequests = IndexDataCreateFromResponse(indexResponse);
-      log.info("수동 data 배치 성공 ");
 
+      return dataRequests;
+    } catch (Exception e) {
+      log.error("지수 데이터 수집 실패");
+      throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
+    }
+  }
+
+  public List<IndexDataFromApi> fetchIndexData(String indexName, String bastDateFrom,
+      String baseDateTo) {
+    try {
+      HttpResponse<String> response = getResponse(indexName, bastDateFrom, baseDateTo);
+      log.info("성공적으로 응답 구함");
+      MarketIndexResponse indexResponse = mapper.readValue(response.body(),
+          MarketIndexResponse.class);
+      log.info("성공적으로 mapper");
+      List<IndexDataFromApi> dataRequests = IndexDataCreateFromResponse(indexResponse);
+      log.info("성공적으로 data api 만듬");
       return dataRequests;
     } catch (Exception e) {
       log.error("지수 데이터 수집 실패");
@@ -101,6 +116,38 @@ public class ScheduledTasks {
     }
   }
 
+  private HttpResponse<String> getResponse(String indexName, String bastDateFrom,
+      String baseDateTo) {
+    try {
+      URI uri;
+      if (bastDateFrom == null && baseDateTo == null) {
+        uri = getUri();
+      } else {
+        uri = getUri(indexName, bastDateFrom, baseDateTo);
+      }
+
+      HttpRequest request = HttpRequest.newBuilder()
+          .uri(uri)
+          .timeout(Duration.ofSeconds(10))
+          .GET()
+          .build();
+      log.info("request 성공적으로 만듬");
+
+      HttpResponse<String> response = HttpClient.newHttpClient()
+          .send(request, BodyHandlers.ofString());
+
+      if (response.statusCode() == 200) {
+        log.info("response 성공적으로 불러옴");
+        return response;
+      } else {
+        log.warn("API 호출 오류 code={}, body={}", response.statusCode(), response.body());
+        throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
+      }
+    } catch (IOException | InterruptedException e) {
+      throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
+    }
+  }
+
   private URI getUri() {
     UriComponentsBuilder uriComponentsBuilder = getUriComponent();
     return toUri(uriComponentsBuilder);
@@ -111,13 +158,27 @@ public class ScheduledTasks {
         .queryParam("serviceKey", encodeServiceKey)
         .queryParam("resultType", "json")
         .queryParam("pageNo", 1)
-        .queryParam("numOfRows", 20);
+        .queryParam("numOfRows", 500);
   }
 
   private URI getUri(String bastDateFrom, String baseDateTo) {
     UriComponentsBuilder uriComponentsBuilder = getUriComponent();
-    uriComponentsBuilder.queryParam("beginBasDt", bastDateFrom)
+    uriComponentsBuilder
+        .queryParam("beginBasDt", bastDateFrom)
         .queryParam("endBasDt", baseDateTo);
+    return toUri(uriComponentsBuilder);
+  }
+
+  private URI getUri(String indexName, String bastDateFrom, String baseDateTo) {
+    UriComponentsBuilder uriComponentsBuilder = getUriComponent();
+    log.info("get URI 구하는 중");
+
+    String encodedIndexName = URLEncoder.encode(indexName, StandardCharsets.UTF_8);
+
+    uriComponentsBuilder.queryParam("idxNm", encodedIndexName)
+        .queryParam("beginBasDt", bastDateFrom)
+        .queryParam("endBasDt", baseDateTo);
+    log.info("get URI 구함");
     return toUri(uriComponentsBuilder);
   }
 

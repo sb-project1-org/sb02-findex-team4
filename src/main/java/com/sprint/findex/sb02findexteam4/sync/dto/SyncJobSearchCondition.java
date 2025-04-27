@@ -15,7 +15,7 @@ public record SyncJobSearchCondition(
     Instant jobTimeTo,
     JobResult status,
     Long idAfter,
-    String cursor,
+    Long cursor,
     String sortField,
     String sortDirection,
     int size

@@ -38,8 +38,8 @@ public class SyncJobHistoryMapper {
       List<SyncJobHistoryDto> content, boolean hasNext, Long totalElements) {
     SyncJobHistoryDto last = content.isEmpty() ? null : content.get(content.size() - 1);
 
-    String nextCursor = hasNext && last != null ? last.jobTime().toString() : null;
-    Long nextIdAfter = hasNext && last != null ? last.id() : null;
+    Long nextCursor = hasNext && last != null ? last.id() : null;
+    Long nextIdAfter = nextCursor;
 
     return new CursorPageResponseSyncJobDto(
         content,
