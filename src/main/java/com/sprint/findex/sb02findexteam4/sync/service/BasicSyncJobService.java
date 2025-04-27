@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +55,7 @@ public class BasicSyncJobService implements SyncJobService {
 
   @Override
   @Transactional
-//  @Scheduled(fixedDelay = 20000)
+  @Scheduled(fixedDelay = 60000)
   public void syncAll() {
     String now = TimeUtils.formatedTimeString(Instant.now());
     try {
@@ -300,14 +301,16 @@ public class BasicSyncJobService implements SyncJobService {
       //지수 데이터를 하나씩 순회를 시작한다.
       for (IndexDataFromApi indexDataFromApi : apiResponse) {
         Instant baseDateFromApi = TimeUtils.formatedTimeInstantFromApi(indexDataFromApi.baseDate());
-        IndexInfo indexInfoFromApi = indexInfoRepository.findByIndexClassificationAndIndexName(indexDataFromApi.indexClassification(), indexDataFromApi.indexName()).orElse(null);
+        IndexInfo indexInfoFromApi = indexInfoRepository.findByIndexClassificationAndIndexName(
+            indexDataFromApi.indexClassification(), indexDataFromApi.indexName()).orElse(null);
         if (indexInfoFromApi == null) {
           log.warn("IndexInfo를 찾을 수 없음: classification={}, name={}",
               indexDataFromApi.indexClassification(), indexDataFromApi.indexName());
           continue;
         }
         if (!indexInfoFromApi.getId().equals(indexInfoId)) {
-          log.warn("IndexInfo ID 불일치: apiId={}, requestId={}", indexInfoFromApi.getId(), indexInfoId);
+          log.warn("IndexInfo ID 불일치: apiId={}, requestId={}", indexInfoFromApi.getId(),
+              indexInfoId);
           continue;
         }
         //만약 지수 정보 아이디와 날짜가 일치하지 않는다면

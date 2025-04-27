@@ -158,7 +158,7 @@ public class ScheduledTasks {
         .queryParam("serviceKey", encodeServiceKey)
         .queryParam("resultType", "json")
         .queryParam("pageNo", 1)
-        .queryParam("numOfRows", 500);
+        .queryParam("numOfRows", 250);
   }
 
   private URI getUri(String bastDateFrom, String baseDateTo) {
