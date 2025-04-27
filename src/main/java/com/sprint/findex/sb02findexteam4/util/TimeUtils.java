@@ -134,8 +134,7 @@ public class TimeUtils {
 
   /**
    * <h2>yyyy-MM-dd -> Instant 변환 메서드 (UTC 기준)</h2>
-   * String 타입의 yyyy-MM-dd 날짜를 Instant로 변환합니다.
-   * 시간은 자정(00:00:00) 기준이며, 시간대는 UTC입니다.
+   * String 타입의 yyyy-MM-dd 날짜를 Instant로 변환합니다. 시간은 자정(00:00:00) 기준이며, 시간대는 UTC입니다.
    *
    * @param dashedDate String, yyyy-MM-dd
    * @return Instant UTC 기준 00:00:00의 Instant 객체
@@ -143,6 +142,10 @@ public class TimeUtils {
   public static Instant instantFromDashedDate(String dashedDate) {
     LocalDate date = LocalDate.parse(dashedDate.trim(), yyyy_MM_dd);
     return date.atStartOfDay(ZoneOffset.UTC).toInstant();
+  }
+
+  public static LocalDate localDateFromApiDate(String apiDate) {
+    return LocalDate.parse(apiDate, yyyyMMdd);
   }
 
 }
