@@ -14,7 +14,7 @@ spring:
     hibernate:
       ddl-auto: update
     defer-datasource-initialization: true
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -26,13 +26,13 @@ spring:
       continue-on-error: false
 
 openApi:
-  key:
+  key: ${OPENAPI_KEY}
 
 logging:
   level:
     org:
       hibernate:
-        SQL: debug
+        SQL: warn
         orm.jdbc.bind: debug
       springframework:
         data: debug
