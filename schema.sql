@@ -37,7 +37,6 @@ CREATE TABLE index_data (
     versus NUMERIC(15, 4),
     fluctuation_rate NUMERIC(15, 4),
     trading_quantity INTEGER,
-    trading_amount INTEGER,
     trading_price INTEGER,
     market_total_amount INTEGER,
     UNIQUE (index_info_id, base_date),
@@ -55,3 +54,4 @@ CREATE TABLE sync_job_history (
     result job_result NOT NULL,
     FOREIGN KEY (index_info_id) REFERENCES index_info(id) ON DELETE SET NULL
 );
+
