@@ -25,6 +25,9 @@ spring:
       mode: always
       continue-on-error: false
 
+server:
+  port: ${PORT:8080}
+
 openApi:
   key: ${OPENAPI_KEY}
 
