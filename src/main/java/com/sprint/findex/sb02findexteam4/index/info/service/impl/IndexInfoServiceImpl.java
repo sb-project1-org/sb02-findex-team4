@@ -135,7 +135,7 @@ public class IndexInfoServiceImpl implements IndexInfoService {
 
   @Override
   public void deleteIndexInfo(Long id) {
-    indexInfoRepository.deleteById(id);
     autoSyncConfigService.deleteByIndexInfoId(id);
+    indexInfoRepository.deleteById(id);
   }
 }

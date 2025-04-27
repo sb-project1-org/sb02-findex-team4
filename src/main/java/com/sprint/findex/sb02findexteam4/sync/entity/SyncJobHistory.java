@@ -29,7 +29,7 @@ public class SyncJobHistory {
   private IndexInfo indexInfo;
 
   @Timestamp
-  @Column(name = "target_date", nullable = false)
+  @Column(name = "target_date")
   private Instant targetDate;
 
   @Column(name = "worker", nullable = false)
