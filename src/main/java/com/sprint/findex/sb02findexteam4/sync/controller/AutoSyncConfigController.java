@@ -1,5 +1,6 @@
 package com.sprint.findex.sb02findexteam4.sync.controller;
 
+import com.sprint.findex.sb02findexteam4.swagger.AutoSyncConfigApi;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigCondition;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigDto;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigSearchRequest;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auto-sync-configs")
 @RequiredArgsConstructor
-public class AutoSyncConfigController {
+public class AutoSyncConfigController implements AutoSyncConfigApi {
 
   private final AutoSyncConfigService autoSyncConfigService;
 
