@@ -1,5 +1,8 @@
 package com.sprint.findex.sb02findexteam4.index.data.repository;
 
+import static com.sprint.findex.sb02findexteam4.exception.ErrorCode.INDEX_DATA_BAD_REQUEST;
+
+import com.sprint.findex.sb02findexteam4.exception.InvalidRequestException;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCsvExportCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataFindCommand;
 import com.sprint.findex.sb02findexteam4.index.data.entity.IndexData;
@@ -78,7 +81,7 @@ public class IndexDataRepositoryImpl implements IndexDataRepositoryCustom {
           ? indexData.marketTotalAmount.asc()
           : indexData.marketTotalAmount.desc();
 
-      default -> throw new IllegalArgumentException("정렬 필드가 잘못되었습니다: " + command.sortField());
+      default -> throw new InvalidRequestException(INDEX_DATA_BAD_REQUEST);
     }
 
     return queryFactory
@@ -141,7 +144,7 @@ public class IndexDataRepositoryImpl implements IndexDataRepositoryCustom {
           ? indexData.marketTotalAmount.asc()
           : indexData.marketTotalAmount.desc();
 
-      default -> throw new IllegalArgumentException("정렬 필드가 잘못되었습니다: " + command.sortField());
+      default -> throw new InvalidRequestException(INDEX_DATA_BAD_REQUEST);
     }
 
     return queryFactory

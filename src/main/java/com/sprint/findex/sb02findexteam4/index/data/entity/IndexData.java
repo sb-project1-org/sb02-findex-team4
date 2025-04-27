@@ -3,6 +3,7 @@ package com.sprint.findex.sb02findexteam4.index.data.entity;
 
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
+import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateCommand;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
 import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import jakarta.persistence.Column;
@@ -76,17 +77,37 @@ public class IndexData {
   private Long marketTotalAmount;
 
   public IndexData update(IndexDataUpdateRequest dto) {
-    this.marketPrice = dto.marketPrice();
-    this.closingPrice = dto.closingPrice();
-    this.highPrice = dto.highPrice();
-    this.lowPrice = dto.lowPrice();
-    this.versus = dto.versus();
-    this.fluctuationRate = dto.fluctuationRate();
-    this.tradingQuantity = dto.tradingQuantity();
-    this.tradingPrice = dto.tradingPrice();
-    this.marketTotalAmount = dto.marketTotalAmount();
+    if(dto.marketPrice()!=null&&!dto.marketPrice().equals(this.marketPrice)) {
+      this.marketPrice = dto.marketPrice();
+    }
+    if(dto.closingPrice()!=null&&!dto.closingPrice().equals(this.closingPrice)) {
+      this.closingPrice = dto.closingPrice();
+    }
+    if(dto.highPrice()!=null&&!dto.highPrice().equals(this.highPrice)) {
+      this.highPrice = dto.highPrice();
+    }
+    if(dto.lowPrice()!=null&&!dto.lowPrice().equals(this.lowPrice)) {
+      this.lowPrice = dto.lowPrice();
+    }
+    if(dto.versus()!=null&&!dto.versus().equals(this.versus)) {
+      this.versus = dto.versus();
+    }
+    if(dto.fluctuationRate()!=null&&!dto.fluctuationRate().equals(this.fluctuationRate)) {
+      this.fluctuationRate = dto.fluctuationRate();
+    }
+    if(dto.tradingQuantity()!=null&&!dto.tradingQuantity().equals(this.tradingQuantity)) {
+      this.tradingQuantity = dto.tradingQuantity();
+    }
+    if(dto.tradingPrice()!=null&&!dto.tradingPrice().equals(this.tradingPrice)) {
+      this.tradingPrice = dto.tradingPrice();
+    }
+    if(dto.marketTotalAmount()!=null&&!dto.marketTotalAmount().equals(this.marketTotalAmount)) {
+      this.marketTotalAmount = dto.marketTotalAmount();
+    }
+
     return this;
   }
+
 
   public static IndexData of(IndexDataCreateRequest req, Instant instant, IndexInfo indexInfo, SourceType sourceType) {
     IndexData data = new IndexData();
@@ -104,4 +125,6 @@ public class IndexData {
     data.marketTotalAmount = req.marketTotalAmount();
     return data;
   }
+
+
 }
