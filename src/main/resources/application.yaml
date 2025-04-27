@@ -2,9 +2,9 @@ spring:
   application:
     name: findex
   datasource:
-    url: jdbc:postgresql://localhost:5432/findex
-    username: findex_user
-    password: findex1234
+    url: jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}
+    username: ${PGUSER}
+    password: ${PGPASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -14,7 +14,7 @@ spring:
     hibernate:
       ddl-auto: update
     defer-datasource-initialization: true
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -25,14 +25,17 @@ spring:
       mode: always
       continue-on-error: false
 
+server:
+  port: ${PORT:8080}
+
 openApi:
-  key:
+  key: ${OPENAPI_KEY}
 
 logging:
   level:
     org:
       hibernate:
-        SQL: debug
+        SQL: warn
         orm.jdbc.bind: debug
       springframework:
         data: debug
