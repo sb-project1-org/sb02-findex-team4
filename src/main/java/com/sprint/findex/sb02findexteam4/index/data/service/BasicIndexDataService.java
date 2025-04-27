@@ -9,6 +9,7 @@ import com.sprint.findex.sb02findexteam4.exception.NotFoundException;
 import com.sprint.findex.sb02findexteam4.index.data.dto.ChartPoint;
 import com.sprint.findex.sb02findexteam4.index.data.dto.CursorPageResponseIndexDataDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexChartDto;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCsvExportCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataFindCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexPerformanceDto;
@@ -23,8 +24,11 @@ import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
 import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import com.sprint.findex.sb02findexteam4.index.info.repository.IndexInfoRepository;
 import com.sprint.findex.sb02findexteam4.util.TimeUtils;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -93,8 +97,8 @@ public class BasicIndexDataService implements IndexDataService {
 
     return new CursorPageResponseIndexDataDto(
         contents,
-        nextIdAfter,
         nextCursor,
+        nextIdAfter,
         command.size(),
         contents.size(),
         hasNext
@@ -185,6 +189,33 @@ public class BasicIndexDataService implements IndexDataService {
     }
 
     return rankedList;
+  }
+
+  @Override
+  public byte[] exportCsv(IndexDataCsvExportCommand command) {
+    List<IndexData> dataList = indexDataRepository.findAllForCsvExport(command);
+
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    PrintWriter writer = new PrintWriter(out, true, StandardCharsets.UTF_8);
+
+    writer.println("baseDate,marketPrice,closingPrice,highPrice,lowPrice,versus,fluctuationRate,tradingQuantity,tradingPrice,marketTotalAmount");
+
+    for (IndexData data : dataList) {
+      writer.printf("%s,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d\n",
+          data.getBaseDate().toString(),
+          data.getMarketPrice(),
+          data.getClosingPrice(),
+          data.getHighPrice(),
+          data.getLowPrice(),
+          data.getVersus(),
+          data.getFluctuationRate(),
+          data.getTradingQuantity(),
+          data.getTradingPrice(),
+          data.getMarketTotalAmount()
+      );
+    }
+    writer.flush();
+    return out.toByteArray();
   }
 
   @Override
