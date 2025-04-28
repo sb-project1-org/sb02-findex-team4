@@ -1,12 +1,11 @@
 package com.sprint.findex.sb02findexteam4.sync.controller;
 
+import com.sprint.findex.sb02findexteam4.swagger.SyncJobApi;
 import com.sprint.findex.sb02findexteam4.sync.dto.CursorPageResponseSyncJobDto;
 import com.sprint.findex.sb02findexteam4.sync.dto.IndexDataSyncRequest;
-import com.sprint.findex.sb02findexteam4.sync.dto.SyncJobHistoryCreateDto;
 import com.sprint.findex.sb02findexteam4.sync.dto.SyncJobHistoryDto;
 import com.sprint.findex.sb02findexteam4.sync.dto.SyncJobSearchCondition;
 import com.sprint.findex.sb02findexteam4.sync.dto.SyncJobSearchRequest;
-import com.sprint.findex.sb02findexteam4.sync.entity.SyncJobHistory;
 import com.sprint.findex.sb02findexteam4.sync.service.SyncJobHistoryService;
 import com.sprint.findex.sb02findexteam4.sync.service.SyncJobService;
 import com.sprint.findex.sb02findexteam4.util.IpUtils;
@@ -28,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/sync-jobs")
-public class SyncJobController {
+public class SyncJobController implements SyncJobApi {
 
     public final SyncJobService syncJobService;
     public final SyncJobHistoryService syncJobHistoryService;
@@ -61,12 +60,5 @@ public class SyncJobController {
         CursorPageResponseSyncJobDto indexInfoSyncJobs = syncJobHistoryService.findHistoryByCursor(condition);
 
         return ResponseEntity.status(HttpStatus.OK).body(indexInfoSyncJobs);
-    }
-
-    @PostMapping("/test/history")
-    public ResponseEntity<SyncJobHistory> testCreateHistory(@RequestBody SyncJobHistoryCreateDto syncJobHistoryCreateDto){
-        SyncJobHistory syncJobHistory = syncJobHistoryService.saveHistory(syncJobHistoryCreateDto);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(syncJobHistory);
     }
 }
