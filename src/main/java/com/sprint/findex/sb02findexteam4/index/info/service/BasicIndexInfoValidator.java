@@ -1,15 +1,14 @@
-package com.sprint.findex.sb02findexteam4.index.info.service.impl;
+package com.sprint.findex.sb02findexteam4.index.info.service;
 
 import static com.sprint.findex.sb02findexteam4.exception.ErrorCode.INDEX_INFO_BAD_REQUEST;
 
 import com.sprint.findex.sb02findexteam4.exception.NormalException;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateCommand;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateRequest;
-import com.sprint.findex.sb02findexteam4.index.info.service.IndexInfoValidator;
 import org.springframework.stereotype.Component;
 
 @Component
-public class IndexInfoValidatorImpl implements IndexInfoValidator {
+public class BasicIndexInfoValidator implements IndexInfoValidator {
 
   @Override
   public void validateForCreate(IndexInfoCreateRequest dto) {
