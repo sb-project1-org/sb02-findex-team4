@@ -9,9 +9,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface IndexDataRepository extends JpaRepository<IndexData, Long>, IndexDataRepositoryCustom {
+public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
+    IndexDataRepositoryCustom {
+
+  Optional<IndexData> findTopByIndexInfoIdOrderByBaseDateDesc(Long id);
 
   boolean existsByIndexInfoIdAndBaseDate(Long indexInfoId, Instant baseDate);
+
   Optional<IndexData> findByIndexInfoIdAndBaseDate(Long indexInfoId, Instant today);
 
   @Query("SELECT i FROM IndexData i " +
@@ -22,5 +26,6 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long>, Ind
       @Param("baseDate") LocalDate baseDate
   );
 
-  List<IndexData> findByIndexInfoIdInAndBaseDateBetween(List<Long> indexInfoIds, Instant baseDateFrom, Instant baseDateTo);
+  List<IndexData> findByIndexInfoIdInAndBaseDateBetween(List<Long> indexInfoIds,
+      Instant baseDateFrom, Instant baseDateTo);
 }

@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,7 +60,7 @@ public class BasicSyncJobService implements SyncJobService {
    */
   @Override
   @Transactional
-  @Scheduled(cron = "0 * * * * *")
+//  @Scheduled(cron = "0 * * * * *")
   public void syncAll() {
     Instant now = Instant.now();
     try {

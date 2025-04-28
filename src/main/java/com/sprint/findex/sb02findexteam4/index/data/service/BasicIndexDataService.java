@@ -39,11 +39,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BasicIndexDataService implements IndexDataService {
 
   private final IndexDataRepository indexDataRepository;
@@ -64,7 +66,7 @@ public class BasicIndexDataService implements IndexDataService {
 
     IndexData indexData = IndexData.from(indexInfo, command);
     IndexData createdIndexData = indexDataRepository.save(indexData);
-
+    log.info("[BasicIndexDataService] Method create - {} ", indexData.getId());
     return IndexDataResponse.from(createdIndexData);
   }
 
@@ -106,14 +108,6 @@ public class BasicIndexDataService implements IndexDataService {
     );
   }
 
-  /**
-   * <H2>지수 차트</H2>
-   * 월/ 분기/ 년 단위 시계열 데이터를 반환한다.
-   *
-   * @param indexInfoId
-   * @param periodType
-   * @return
-   */
   @Transactional(readOnly = true)
   @Override
   public IndexChartDto getIndexChart(Long indexInfoId, PeriodType periodType) {
@@ -125,7 +119,6 @@ public class BasicIndexDataService implements IndexDataService {
 
     List<ChartPoint> pricePoints = new ArrayList<>();
 
-    //데이터를 전부 찾아서 pricePoint에 채운다.
     while (!startDate.isAfter(currentDate)) {
       Optional<IndexData> dataOpt = indexDataRepository
           .findByIndexInfoIdAndBaseDateOnlyDateMatch(indexInfoId, startDate);
@@ -138,7 +131,6 @@ public class BasicIndexDataService implements IndexDataService {
       startDate = startDate.plusDays(1);
     }
 
-    //5일치, 20일치 평균 선에 대한 값을 구한다.
     List<ChartPoint> ma5 = calculateMovingAverageStrict(pricePoints, MA5DATA_NUM);
     List<ChartPoint> ma20 = calculateMovingAverageStrict(pricePoints, MA20DATA_NUM);
 
@@ -150,18 +142,22 @@ public class BasicIndexDataService implements IndexDataService {
   @Override
   public List<IndexPerformanceDto> getFavoriteIndexPerformances(PeriodType periodType) {
     List<IndexInfo> favorites = indexInfoRepository.findAllByFavoriteTrue();
-    LocalDate today = Instant.now().atZone(ZoneId.of("Asia/Seoul")).toLocalDate();
+    LocalDate today = LocalDate.now();
 
+    //최신 날짜로 부터 1달 전의 값을 구해야 한다.
     return favorites.stream()
         .map(indexInfo -> {
-          IndexData current = indexDataRepository.findByIndexInfoIdAndBaseDateOnlyDateMatch(
-              indexInfo.getId(), today
-          ).orElse(null);
+          log.info("[BasicIndexDataService] method getFavoriteIndexPerformances, favorite: {} ",
+              indexInfo.getIndexName());
+          IndexData current = indexDataRepository.findTopByIndexInfoIdOrderByBaseDateDesc(
+              indexInfo.getId()).orElse(null);
+
           IndexData past = indexDataRepository.findByIndexInfoIdAndBaseDateOnlyDateMatch(
                   indexInfo.getId(),
                   calculateBaseDate(periodType))
               .orElse(null);
-          return IndexPerformanceDto.of(indexInfo, current, past);
+          return IndexPerformanceDto.of(indexInfo, current,
+              past);
         })
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
@@ -172,7 +168,6 @@ public class BasicIndexDataService implements IndexDataService {
   public List<RankedIndexPerformanceDto> getIndexPerformanceRank(Long indexInfoId,
       PeriodType periodType, int limit) {
     LocalDate baseDate = calculateBaseDate(periodType);
-    LocalDate today = Instant.now().atZone(ZoneId.of("Asia/Seoul")).toLocalDate();
 
     List<IndexInfo> targetInfos = (indexInfoId != null)
         ? indexInfoRepository.findAllById(List.of(indexInfoId))
@@ -180,9 +175,8 @@ public class BasicIndexDataService implements IndexDataService {
 
     List<IndexPerformanceDto> sortedList = targetInfos.stream()
         .map(info -> {
-          IndexData current = indexDataRepository
-              .findByIndexInfoIdAndBaseDateOnlyDateMatch(info.getId(), today)
-              .orElse(null);
+          IndexData current = indexDataRepository.findTopByIndexInfoIdOrderByBaseDateDesc(
+              info.getId()).orElse(null);
 
           IndexData before = indexDataRepository
               .findByIndexInfoIdAndBaseDateOnlyDateMatch(info.getId(), baseDate)
