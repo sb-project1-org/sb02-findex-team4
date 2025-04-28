@@ -52,6 +52,6 @@ CREATE TABLE sync_job_history (
     worker VARCHAR NOT NULL,
     job_time TIMESTAMP NOT NULL,
     result job_result NOT NULL,
-    FOREIGN KEY (index_info_id) REFERENCES index_info(id) ON DELETE SET NULL
+    FOREIGN KEY (index_info_id) REFERENCES index_info(id) ON DELETE CASCADE
 );
 
