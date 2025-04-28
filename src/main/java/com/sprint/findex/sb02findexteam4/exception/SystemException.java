@@ -1,12 +1,16 @@
 package com.sprint.findex.sb02findexteam4.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 public class SystemException extends RuntimeException {
-    private ErrorCode errorCode;
+
+  private ErrorCode errorCode;
+  private Object[] args;
+
+  public SystemException(ErrorCode errorCode, Object... args) {
+    super(errorCode.getMessage());
+    this.errorCode = errorCode;
+    this.args = args;
+  }
 }
