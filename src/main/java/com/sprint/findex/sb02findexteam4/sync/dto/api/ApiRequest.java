@@ -1,4 +1,4 @@
-package com.sprint.findex.sb02findexteam4.sync.dto;
+package com.sprint.findex.sb02findexteam4.sync.dto.api;
 
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateRequest;
 import java.util.List;
