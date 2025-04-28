@@ -2,7 +2,7 @@ package com.sprint.findex.sb02findexteam4.sync.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigCondition;
+import com.sprint.findex.sb02findexteam4.sync.dto.search.AutoSyncConfigCondition;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigDto;
 import com.sprint.findex.sb02findexteam4.sync.dto.CursorPageResponseAutoSyncConfigDto;
 import com.sprint.findex.sb02findexteam4.sync.entity.AutoSyncConfig;

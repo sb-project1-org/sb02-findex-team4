@@ -1,26 +1,20 @@
 package com.sprint.findex.sb02findexteam4.index.info.service;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
 import com.sprint.findex.sb02findexteam4.exception.NormalException;
 import com.sprint.findex.sb02findexteam4.index.info.dto.CursorPageResponseIndexInfoDto;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateCommand;
-import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoDto;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoSearchCondition;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoSummaryDto;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
-import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import com.sprint.findex.sb02findexteam4.index.info.repository.IndexInfoRepository;
 import com.sprint.findex.sb02findexteam4.sync.service.AutoSyncConfigService;
 import com.sprint.findex.sb02findexteam4.util.TimeUtils;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.util.List;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,75 +23,54 @@ import org.springframework.transaction.annotation.Transactional;
 public class BasicIndexInfoService implements IndexInfoService {
 
   private final IndexInfoRepository indexInfoRepository;
-  private final IndexInfoValidator indexInfoValidator;
   private final AutoSyncConfigService autoSyncConfigService;
-  private final JPAQueryFactory queryFactory;
 
   public BasicIndexInfoService(IndexInfoRepository indexInfoRepository,
-      IndexInfoValidator indexInfoValidator,
       AutoSyncConfigService autoSyncConfigService,
       EntityManager entityManager) {
     this.indexInfoRepository = indexInfoRepository;
-    this.indexInfoValidator = indexInfoValidator;
     this.autoSyncConfigService = autoSyncConfigService;
-    this.queryFactory = new JPAQueryFactory(entityManager);
   }
 
   @Override
   @Transactional
-  public IndexInfoDto registerIndexInfo(IndexInfoCreateRequest requestDto, SourceType sourceType) {
-    indexInfoValidator.validateForCreate(requestDto);
-
-    IndexInfoCreateCommand command = IndexInfoCreateCommand.of(requestDto);
-
-    IndexInfo indexInfo = IndexInfo.create(command, sourceType);
+  public IndexInfoDto registerIndexInfo(IndexInfoCreateCommand command) {
+    IndexInfo indexInfo = IndexInfo.create(command);
     indexInfoRepository.save(indexInfo);
-
     autoSyncConfigService.create(indexInfo);
 
-    IndexInfoDto indexInfoDto = IndexInfoDto.of(indexInfo);
-    return indexInfoDto;
+    return IndexInfoDto.of(indexInfo);
   }
 
   @Override
+  @Transactional
   public IndexInfo registerIndexInfoFromApi(IndexInfoCreateCommand command) {
-    indexInfoValidator.validateForCreate(command);
-
-    SourceType sourceType = SourceType.OPEN_API;
-    IndexInfo indexInfo = IndexInfo.create(command, sourceType);
+    IndexInfo indexInfo = IndexInfo.create(command);
     indexInfoRepository.save(indexInfo);
-
     autoSyncConfigService.create(indexInfo);
 
     return indexInfo;
   }
 
   @Override
+  @Transactional(readOnly = true)
   public CursorPageResponseIndexInfoDto findIndexInfoByCursor(IndexInfoSearchCondition condition) {
-    Pageable pageable = createPage(condition.sortDirection(), condition.sortField(),
-        condition.size());
     return indexInfoRepository.findIndexInfo(condition);
   }
 
-  private Pageable createPage(String sortDirection, String sortField, int size) {
-    Sort.Direction Direction = Sort.Direction.fromString(sortDirection);
-    Sort sort = Sort.by(Direction, sortField);
-    return PageRequest.of(0, size, sort);
-  }
-
   @Override
+  @Transactional(readOnly = true)
   public List<IndexInfoSummaryDto> getIndexInfoSummaries() {
     return indexInfoRepository.getIndexInfoSummaries();
   }
 
   @Override
+  @Transactional(readOnly = true)
   public IndexInfoDto findById(Long id) {
     IndexInfo indexInfo = indexInfoRepository.findById(id)
         .orElseThrow(() -> new NormalException(ErrorCode.INDEX_INFO_NOT_FOUND));
 
-    IndexInfoDto indexInfoDto = IndexInfoDto.of(indexInfo);
-
-    return indexInfoDto;
+    return IndexInfoDto.of(indexInfo);
   }
 
   @Override
@@ -130,8 +103,8 @@ public class BasicIndexInfoService implements IndexInfoService {
     return IndexInfoDto.of(indexInfo);
   }
 
-
   @Override
+  @Transactional
   public void deleteIndexInfo(Long id) {
     autoSyncConfigService.deleteByIndexInfoId(id);
     indexInfoRepository.deleteById(id);

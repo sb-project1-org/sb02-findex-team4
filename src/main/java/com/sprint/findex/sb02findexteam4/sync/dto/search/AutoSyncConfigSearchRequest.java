@@ -1,4 +1,4 @@
-package com.sprint.findex.sb02findexteam4.sync.dto;
+package com.sprint.findex.sb02findexteam4.sync.dto.search;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

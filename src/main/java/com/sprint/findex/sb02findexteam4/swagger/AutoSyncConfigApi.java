@@ -2,7 +2,7 @@ package com.sprint.findex.sb02findexteam4.swagger;
 
 import com.sprint.findex.sb02findexteam4.exception.ErrorResponse;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigDto;
-import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigSearchRequest;
+import com.sprint.findex.sb02findexteam4.sync.dto.search.AutoSyncConfigSearchRequest;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigUpdateRequest;
 import com.sprint.findex.sb02findexteam4.sync.dto.CursorPageResponseAutoSyncConfigDto;
 import io.swagger.v3.oas.annotations.Operation;

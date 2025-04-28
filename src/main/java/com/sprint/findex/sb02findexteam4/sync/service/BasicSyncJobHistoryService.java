@@ -2,7 +2,7 @@ package com.sprint.findex.sb02findexteam4.sync.service;
 
 import com.sprint.findex.sb02findexteam4.sync.dto.CursorPageResponseSyncJobDto;
 import com.sprint.findex.sb02findexteam4.sync.dto.SyncJobHistoryCreateDto;
-import com.sprint.findex.sb02findexteam4.sync.dto.SyncJobSearchCondition;
+import com.sprint.findex.sb02findexteam4.sync.dto.search.SyncJobSearchCondition;
 import com.sprint.findex.sb02findexteam4.sync.entity.JobResult;
 import com.sprint.findex.sb02findexteam4.sync.entity.SyncJobHistory;
 import com.sprint.findex.sb02findexteam4.sync.repository.SyncJobHistoryRepository;
@@ -14,24 +14,24 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BasicSyncJobHistoryService implements SyncJobHistoryService {
 
-    private final SyncJobHistoryRepository syncJobHistoryRepository;
+  private final SyncJobHistoryRepository syncJobHistoryRepository;
 
-    @Override
-    public SyncJobHistory saveHistory(SyncJobHistoryCreateDto syncJobHistoryCreateDto) {
-        SyncJobHistory syncJobHistory = SyncJobHistory.create(
-            syncJobHistoryCreateDto.jobType(),
-            syncJobHistoryCreateDto.indexInfo(),
-            syncJobHistoryCreateDto.targetDate(),
-            syncJobHistoryCreateDto.worker(),
-            Instant.now(),
-            JobResult.SUCCESS
-        );
+  @Override
+  public SyncJobHistory saveHistory(SyncJobHistoryCreateDto syncJobHistoryCreateDto) {
+    SyncJobHistory syncJobHistory = SyncJobHistory.create(
+        syncJobHistoryCreateDto.jobType(),
+        syncJobHistoryCreateDto.indexInfo(),
+        syncJobHistoryCreateDto.targetDate(),
+        syncJobHistoryCreateDto.worker(),
+        Instant.now(),
+        JobResult.SUCCESS
+    );
 
-        return syncJobHistoryRepository.save(syncJobHistory);
-    }
+    return syncJobHistoryRepository.save(syncJobHistory);
+  }
 
-    @Override
-    public CursorPageResponseSyncJobDto findHistoryByCursor(SyncJobSearchCondition condition) {
-        return syncJobHistoryRepository.findSyncJobs(condition);
-    }
+  @Override
+  public CursorPageResponseSyncJobDto findHistoryByCursor(SyncJobSearchCondition condition) {
+    return syncJobHistoryRepository.findSyncJobs(condition);
+  }
 }
