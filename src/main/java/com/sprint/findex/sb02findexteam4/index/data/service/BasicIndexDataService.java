@@ -9,21 +9,19 @@ import com.sprint.findex.sb02findexteam4.exception.NotFoundException;
 import com.sprint.findex.sb02findexteam4.index.data.dto.ChartPoint;
 import com.sprint.findex.sb02findexteam4.index.data.dto.CursorPageResponseIndexDataDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexChartDto;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCsvExportCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataFindCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexPerformanceDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.RankedIndexPerformanceDto;
 import com.sprint.findex.sb02findexteam4.index.data.entity.IndexData;
-import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.entity.PeriodType;
 import com.sprint.findex.sb02findexteam4.index.data.repository.IndexDataRepository;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
-import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import com.sprint.findex.sb02findexteam4.index.info.repository.IndexInfoRepository;
-import com.sprint.findex.sb02findexteam4.util.TimeUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
@@ -55,17 +53,15 @@ public class BasicIndexDataService implements IndexDataService {
 
   @Transactional
   @Override
-  public IndexDataResponse create(IndexDataCreateRequest request, SourceType sourceType) {
-    IndexInfo indexInfo = indexInfoRepository.findById(request.indexInfoId())
+  public IndexDataResponse create(IndexDataCreateCommand command) {
+    IndexInfo indexInfo = indexInfoRepository.findById(command.indexInfoId())
         .orElseThrow(() -> new NotFoundException(INDEX_INFO_NOT_FOUND));
 
-    Instant instant = TimeUtils.formatedTimeInstant(request.baseDate());
-
-    if (isDuplicated(request.indexInfoId(), instant)) {
+    if (isDuplicated(command.indexInfoId(), command.baseDate())) {
       throw new AlreadyExistsException(INDEX_DATA_ALREADY_EXISTS);
     }
 
-    IndexData indexData = IndexData.of(request, instant, indexInfo, sourceType);
+    IndexData indexData = IndexData.from(indexInfo, command);
     IndexData createdIndexData = indexDataRepository.save(indexData);
 
     return IndexDataResponse.from(createdIndexData);
