@@ -13,11 +13,11 @@ import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCsvExportCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataFindCommand;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexPerformanceDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.RankedIndexPerformanceDto;
 import com.sprint.findex.sb02findexteam4.index.data.entity.IndexData;
-import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
-import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.entity.PeriodType;
 import com.sprint.findex.sb02findexteam4.index.data.repository.IndexDataRepository;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
@@ -30,10 +30,11 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -105,6 +106,14 @@ public class BasicIndexDataService implements IndexDataService {
     );
   }
 
+  /**
+   * <H2>지수 차트</H2>
+   * 월/ 분기/ 년 단위 시계열 데이터를 반환한다.
+   *
+   * @param indexInfoId
+   * @param periodType
+   * @return
+   */
   @Transactional(readOnly = true)
   @Override
   public IndexChartDto getIndexChart(Long indexInfoId, PeriodType periodType) {
@@ -116,6 +125,7 @@ public class BasicIndexDataService implements IndexDataService {
 
     List<ChartPoint> pricePoints = new ArrayList<>();
 
+    //데이터를 전부 찾아서 pricePoint에 채운다.
     while (!startDate.isAfter(currentDate)) {
       Optional<IndexData> dataOpt = indexDataRepository
           .findByIndexInfoIdAndBaseDateOnlyDateMatch(indexInfoId, startDate);
@@ -128,6 +138,7 @@ public class BasicIndexDataService implements IndexDataService {
       startDate = startDate.plusDays(1);
     }
 
+    //5일치, 20일치 평균 선에 대한 값을 구한다.
     List<ChartPoint> ma5 = calculateMovingAverageStrict(pricePoints, MA5DATA_NUM);
     List<ChartPoint> ma20 = calculateMovingAverageStrict(pricePoints, MA20DATA_NUM);
 
@@ -230,37 +241,32 @@ public class BasicIndexDataService implements IndexDataService {
   }
 
   private List<ChartPoint> calculateMovingAverageStrict(List<ChartPoint> prices, int window) {
-    List<ChartPoint> result = new ArrayList<>();
 
-    Map<LocalDate, BigDecimal> priceMap = prices.stream()
-        .collect(Collectors.toMap(
-            p -> LocalDate.parse(p.date()),
-            ChartPoint::value
-        ));
-
-    List<LocalDate> sortedDates = prices.stream()
-        .map(p -> LocalDate.parse(p.date()))
-        .sorted()
+    // 날짜 오름차순 정렬
+    List<ChartPoint> pts = prices.stream()
+        .sorted(Comparator.comparing(p -> LocalDate.parse(p.date())))
         .toList();
 
-    for (LocalDate baseDate : sortedDates) {
-      List<LocalDate> pastDates = new ArrayList<>();
-      for (int i = 1; i <= window; i++) {
-        pastDates.add(baseDate.minusDays(i));
+    Deque<BigDecimal> win = new ArrayDeque<>(window);
+    BigDecimal sum = BigDecimal.ZERO;
+    List<ChartPoint> result = new ArrayList<>(pts.size());
+
+    for (ChartPoint p : pts) {
+      BigDecimal v = p.value();
+      win.addLast(v);
+      sum = sum.add(v);
+
+      if (win.size() > window)             // 윈도 초과 시 맨 앞 제거
+      {
+        sum = sum.subtract(win.removeFirst());
       }
 
-      if (pastDates.stream().allMatch(priceMap::containsKey)) {
-        BigDecimal sum = pastDates.stream()
-            .map(priceMap::get)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+      BigDecimal avg = (win.size() == window)
+          ? sum.divide(BigDecimal.valueOf(window), 2, RoundingMode.HALF_UP)
+          : null;                      // 아직 데이터 부족
 
-        BigDecimal avg = sum.divide(BigDecimal.valueOf(window), 2, RoundingMode.HALF_UP);
-        result.add(new ChartPoint(baseDate.toString(), avg));
-      } else {
-        result.add(new ChartPoint(baseDate.toString(), null));
-      }
+      result.add(new ChartPoint(p.date(), avg));
     }
-
     return result;
   }
 
