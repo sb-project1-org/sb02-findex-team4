@@ -155,7 +155,7 @@ public class BasicSyncJobService implements SyncJobService {
 
   @Override
   @Transactional
-  public List<SyncJobHistoryDto> syncIndexDataFromApi(String baseDateFrom, String baseDateTo) {
+  public List<SyncJobHistoryDto> syncIndexDataFromApi(Instant baseDateFrom, Instant baseDateTo) {
     //연동 기록 목록을 저장해둘 result
     List<SyncJobHistory> result = new ArrayList<>();
 
@@ -168,12 +168,11 @@ public class BasicSyncJobService implements SyncJobService {
 
     for (IndexInfo indexInfo : indexInfoList) {
       List<IndexDataFromApi> apiResponse = scheduledTasks.fetchIndexData(indexInfo.getIndexName(),
-          TimeUtils.formatedStringFromDashedDate(baseDateFrom),
-          TimeUtils.formatedStringFromDashedDate(baseDateTo));
+          baseDateFrom, baseDateTo);
       for (IndexDataFromApi indexDataFromApi : apiResponse) {
         SyncJobHistory syncJobHistory;
-        Optional<IndexData> optionalIndexData = indexDataRepository.findByIndexInfoIdAndBaseDateOnlyDateMatch(
-            indexInfo.getId(), TimeUtils.localDateFromApiDate(indexDataFromApi.baseDate()));
+        Optional<IndexData> optionalIndexData = indexDataRepository.findByIndexInfoIdAndBaseDate(
+            indexInfo.getId(), indexDataFromApi.baseDate());
         if (optionalIndexData.isPresent()) {
           IndexData indexData = optionalIndexData.get();
           indexData.update(IndexDataUpdateRequest.fromApi(indexDataFromApi));
@@ -187,8 +186,12 @@ public class BasicSyncJobService implements SyncJobService {
               response.id());
         }
         syncJobHistory = syncJobHistoryService.saveHistory(
-            SyncJobHistoryCreateDto.forIndexData(indexInfo, "system",
-                TimeUtils.formatedTimeInstantFromApi(indexDataFromApi.baseDate())));
+            SyncJobHistoryCreateDto.forIndexData(
+                indexInfo,
+                "system",
+                indexDataFromApi.baseDate()
+            )
+        );
         result.add(syncJobHistory);
       }
     }
@@ -253,7 +256,7 @@ public class BasicSyncJobService implements SyncJobService {
 
   @Transactional
   @Override
-  public List<SyncJobHistoryDto> syncIndexData(IndexDataSyncRequest request, String ip) {
+  public List<SyncJobHistoryDto> syncIndexData(IndexDataSyncCommand request, String ip) {
     List<Long> indexInfoIds = request.indexInfoIds();
     List<IndexInfo> indexInfoList = new ArrayList<>();
     List<SyncJobHistoryDto> result = new ArrayList<>();
@@ -271,15 +274,15 @@ public class BasicSyncJobService implements SyncJobService {
       //지수 정보의 이름, DateFrom, DateTo를 통해서 api 응답을 받는다.
       List<IndexDataFromApi> apiResponse = scheduledTasks.fetchIndexData(
           indexInfo.getIndexName(),
-          TimeUtils.formatedStringFromDashedDate(request.baseDateFrom()),
-          TimeUtils.formatedStringFromDashedDate(request.baseDateTo())
+          request.baseDateFrom(),
+          request.baseDateTo()
       );
       log.info("생성된 api 데이터 목록의 수 : {}", apiResponse.size());
 
       Long indexInfoId = indexInfo.getId();
       //지수 데이터를 하나씩 순회를 시작한다.
       for (IndexDataFromApi indexDataFromApi : apiResponse) {
-        Instant baseDateFromApi = TimeUtils.formatedTimeInstantFromApi(indexDataFromApi.baseDate());
+        Instant baseDateFromApi = indexDataFromApi.baseDate();
         IndexInfo indexInfoFromApi = indexInfoRepository.findByIndexClassificationAndIndexName(
             indexDataFromApi.indexClassification(), indexDataFromApi.indexName()).orElse(null);
 

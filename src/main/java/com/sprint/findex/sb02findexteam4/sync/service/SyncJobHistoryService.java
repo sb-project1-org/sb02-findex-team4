@@ -7,8 +7,8 @@ import com.sprint.findex.sb02findexteam4.sync.entity.SyncJobHistory;
 
 public interface SyncJobHistoryService {
 
-    SyncJobHistory saveHistory(SyncJobHistoryCreateDto syncJobHistoryCreateDto);
+  SyncJobHistory saveHistory(SyncJobHistoryCreateDto syncJobHistoryCreateDto);
 
-    CursorPageResponseSyncJobDto findHistoryByCursor(SyncJobSearchCondition condition);
+  CursorPageResponseSyncJobDto findHistoryByCursor(SyncJobSearchCondition condition);
 
 }

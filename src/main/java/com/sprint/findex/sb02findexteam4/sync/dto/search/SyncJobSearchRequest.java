@@ -11,14 +11,15 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class SyncJobSearchRequest {
-    private JobType jobType;
-    private Long indexInfoId;
-    private String baseDateFrom;
-    private String baseDateTo;
-    private String worker;
-    private Instant jobTimeFrom;
-    private Instant jobTimeTo;
-    private JobResult status;
-    private Long idAfter;
-    private Long cursor;
+
+  private JobType jobType;
+  private Long indexInfoId;
+  private String baseDateFrom;
+  private String baseDateTo;
+  private String worker;
+  private Instant jobTimeFrom;
+  private Instant jobTimeTo;
+  private JobResult status;
+  private Long idAfter;
+  private Long cursor;
 }

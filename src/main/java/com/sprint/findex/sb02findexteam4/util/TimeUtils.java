@@ -34,6 +34,18 @@ public class TimeUtils {
   }
 
   /**
+   * <h2>Instant -> String 타입 yyyyMMdd 변환 </h2>
+   * Instant 타입을 yyyyMMdd타입으로 변환한다.
+   *
+   * @param instant 글로벌 타임
+   * @return yyyyMMdd
+   */
+  public static String formatedTimeStringNonDashed(Instant instant) {
+    return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC)
+        .format(yyyyMMdd);
+  }
+
+  /**
    * <h2>String -> Instant 타입 변환: yyyy-MM-dd</h2>
    * yyyy-MM-dd T 00:00:00을 Instant 타입으로 변환한다.
    *

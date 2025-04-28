@@ -23,7 +23,7 @@ public record IndexDataCreateRequest(
   public static IndexDataCreateRequest from(Long indexInfoId, IndexDataFromApi dataFromApi) {
     return IndexDataCreateRequest.builder()
         .indexInfoId(indexInfoId)
-        .baseDate(TimeUtils.normalizeToDashedDate(dataFromApi.baseDate()))
+        .baseDate(TimeUtils.formatedTimeString(dataFromApi.baseDate()))
         .marketPrice(dataFromApi.marketPrice())
         .closingPrice(dataFromApi.closingPrice())
         .highPrice(dataFromApi.highPrice())
