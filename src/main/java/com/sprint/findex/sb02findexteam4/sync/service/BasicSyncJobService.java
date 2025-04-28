@@ -26,9 +26,11 @@ import com.sprint.findex.sb02findexteam4.sync.repository.SyncJobHistoryRepositor
 import com.sprint.findex.sb02findexteam4.util.TimeUtils;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -196,20 +198,31 @@ public class BasicSyncJobService implements SyncJobService {
   @Transactional
   @Override
   public List<SyncJobHistoryDto> syncIndexInfo(String ip) {
+    // 1. 현재 DB에 존재하는 index info들을 가져온다
     List<IndexInfo> indexInfoList = indexInfoRepository.findAll();
     log.info("indexInfoList 성공적으로 불러옴");
+
+    // 2. 외부 API를 통해 가져온다
     List<IndexInfoCreateRequest> apiResponse = scheduledTasks.fetchIndexInfo();
     log.info("api 성공적으로 불러옴");
-    List<SyncJobHistoryDto> result = new ArrayList<>();
 
+    // 3. 기존 IndexInfo를 "key" 기준으로 Map화 (indexClassification + "|" + indexName)
     Map<String, IndexInfo> existingIndexInfoMap = indexInfoList.stream()
         .collect(Collectors.toMap(
             IndexInfo -> IndexInfo.getIndexClassification() + "|" + IndexInfo.getIndexName(),
             indexInfo -> indexInfo)
         );
 
+    // 4. 이번 트랜잭션 안에서 새로 생성(save)한 key들도 관리
+    Set<String> newCreateKeys = new HashSet<>();
+
+    List<SyncJobHistoryDto> result = new ArrayList<>();
+
+
     for (IndexInfoCreateRequest request : apiResponse) {
       String key = request.indexClassification() + "|" + request.indexName();
+
+      // 5. 기존 DB or 이번 트랜잭션 생성 내역에 있는지 확인
       if (existingIndexInfoMap.containsKey(key)) { // update
         log.info("값이 같음 {} ", key);
         IndexInfo existing = existingIndexInfoMap.get(key);
@@ -219,15 +232,19 @@ public class BasicSyncJobService implements SyncJobService {
             SyncJobHistoryCreateDto.forIndexInfo(existing, ip));
 
         result.add(SyncJobHistoryMapper.toDto(syncJobHistory));
-      } else { // create
-        log.info("값이 없음 {} ", key);
+      } else if (!newCreateKeys.contains(key)){ // create
+        log.info("값이 없음 {}", key);
+
         IndexInfo indexInfo = indexInfoService.registerIndexInfoFromApi(
             IndexInfoCreateCommand.fromApi(request));
 
         SyncJobHistory syncJobHistory = syncJobHistoryService.saveHistory(
             SyncJobHistoryCreateDto.forIndexInfo(indexInfo, ip));
 
+        newCreateKeys.add(key);
         result.add(SyncJobHistoryMapper.toDto(syncJobHistory));
+      } else {
+        log.warn("이미 생성 대기 중인 키 중복 감지: {}", key);
       }
     }
 
