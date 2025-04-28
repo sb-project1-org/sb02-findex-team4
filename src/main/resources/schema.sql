@@ -36,9 +36,9 @@ CREATE TABLE index_data (
     low_price NUMERIC(15, 4),
     versus NUMERIC(15, 4),
     fluctuation_rate NUMERIC(15, 4),
-    trading_quantity INTEGER,
-    trading_price INTEGER,
-    market_total_amount INTEGER,
+    trading_quantity BIGINT,
+    trading_price BIGINT,
+    market_total_amount BIGINT,
     UNIQUE (index_info_id, base_date),
     FOREIGN KEY (index_info_id) REFERENCES index_info(id) ON DELETE CASCADE
 );
