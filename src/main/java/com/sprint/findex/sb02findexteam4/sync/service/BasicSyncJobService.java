@@ -87,12 +87,12 @@ public class BasicSyncJobService implements SyncJobService {
 
       syncIndexInfoFromApi();
       log.info(
-          "[Basic Sync Job Service] : NotFoundException, sync All - call syncIndexInfoFromApi");
+          "[Basic Sync Job Service] empty DB, sync All - call syncIndexInfoFromApi");
 
       syncIndexDataFromApi(oneMonthAgoDate, TimeUtils.normalizeToDashedDate(now));
 
       log.info(
-          "[Basic Sync Job Service] : NotFoundException, sync All - call syncIndexDataFromApi");
+          "[Basic Sync Job Service] empty DB, sync All - call syncIndexDataFromApi");
     }
   }
 
