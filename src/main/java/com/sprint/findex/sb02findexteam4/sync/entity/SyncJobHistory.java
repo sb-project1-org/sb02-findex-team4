@@ -24,7 +24,7 @@ public class SyncJobHistory {
   private JobType jobType;
 
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "index_info_id")
   private IndexInfo indexInfo;
 

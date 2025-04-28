@@ -15,7 +15,7 @@ public record SyncJobSearchCondition(
     Instant jobTimeTo,
     JobResult status,
     Long idAfter,
-    Long cursor,
+    Instant cursor,
     String sortField,
     String sortDirection,
     int size
@@ -35,6 +35,17 @@ public record SyncJobSearchCondition(
         ? TimeUtils.formatedTimeInstant(request.getBaseDateTo())
         : null;
 
+    Instant cursor = null;
+    if (request.getCursor() != null) {
+      if ("jobTime".equals(sortField)) {
+        // jobTime은 full Instant string으로 넘어옴
+        cursor = Instant.parse(request.getCursor());
+      } else {
+        // targetDate는 yyyy-MM-dd 포맷으로 넘어옴
+        cursor = TimeUtils.formatedTimeInstant(request.getCursor());
+      }
+    }
+
     return new SyncJobSearchCondition(
         request.getJobType(),
         request.getIndexInfoId(),
@@ -45,7 +56,7 @@ public record SyncJobSearchCondition(
         request.getJobTimeTo(),
         request.getStatus(),
         request.getIdAfter(),
-        request.getCursor(),
+        cursor,
         sortField,
         sortDirection,
         size

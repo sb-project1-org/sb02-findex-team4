@@ -35,11 +35,19 @@ public class SyncJobHistoryMapper {
   }
 
   public static CursorPageResponseSyncJobDto toCursorPageResponseDto(
-      List<SyncJobHistoryDto> content, boolean hasNext, Long totalElements) {
+      List<SyncJobHistoryDto> content, boolean hasNext, Long totalElements, String sortField) {
     SyncJobHistoryDto last = content.isEmpty() ? null : content.get(content.size() - 1);
 
-    Long nextCursor = hasNext && last != null ? last.id() : null;
-    Long nextIdAfter = nextCursor;
+    String nextCursor = null;
+    if (hasNext && last != null) {
+      if ("jobTime".equals(sortField)) {
+        nextCursor = last.jobTime() != null ? last.jobTime().toString() : null;
+      } else {
+        nextCursor = last.targetDate() != null ? last.targetDate().toString() : null;
+      }
+    }
+
+    Long nextIdAfter = last != null ? last.id() : null;
 
     return new CursorPageResponseSyncJobDto(
         content,
