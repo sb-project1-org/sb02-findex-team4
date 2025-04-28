@@ -8,7 +8,7 @@ import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
 import com.sprint.findex.sb02findexteam4.exception.NormalException;
 import com.sprint.findex.sb02findexteam4.sync.dto.CursorPageResponseSyncJobDto;
 import com.sprint.findex.sb02findexteam4.sync.dto.SyncJobHistoryDto;
-import com.sprint.findex.sb02findexteam4.sync.dto.SyncJobSearchCondition;
+import com.sprint.findex.sb02findexteam4.sync.dto.search.SyncJobSearchCondition;
 import com.sprint.findex.sb02findexteam4.sync.entity.QSyncJobHistory;
 import com.sprint.findex.sb02findexteam4.sync.entity.SyncJobHistory;
 import com.sprint.findex.sb02findexteam4.sync.mapper.SyncJobHistoryMapper;
