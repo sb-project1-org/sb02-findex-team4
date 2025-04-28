@@ -9,6 +9,7 @@ import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoSearchRequest;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoSummaryDto;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.service.IndexInfoService;
+import com.sprint.findex.sb02findexteam4.swagger.IndexInfoApi;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.List;
@@ -29,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/api/index-infos")
-public class IndexInfoController {
+public class IndexInfoController implements IndexInfoApi {
 
   private final IndexInfoService indexInfoService;
 

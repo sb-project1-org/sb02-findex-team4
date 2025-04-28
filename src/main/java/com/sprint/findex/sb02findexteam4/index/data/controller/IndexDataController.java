@@ -14,6 +14,7 @@ import com.sprint.findex.sb02findexteam4.index.data.dto.RankedIndexPerformanceDt
 import com.sprint.findex.sb02findexteam4.index.data.entity.PeriodType;
 import com.sprint.findex.sb02findexteam4.index.data.service.IndexDataService;
 import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
+import com.sprint.findex.sb02findexteam4.swagger.IndexDataApi;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -33,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/index-data")
-public class IndexDataController {
+public class IndexDataController implements IndexDataApi {
 
   private final IndexDataService indexDataService;
 
