@@ -33,13 +33,18 @@ public class CustomIndexInfoRepositoryImpl implements CustomIndexInfoRepository 
   @Override
   public CursorPageResponseIndexInfoDto findIndexInfo(IndexInfoSearchCondition condition) {
     List<BooleanExpression> conditions = buildConditions(condition);
+    if (condition.cursor() != null) {
+      BooleanExpression cursorCondition = gerCursorPredicate(condition);
+      conditions.add(cursorCondition);
+    }
+    
     Pageable pageable = createPage(condition.sortDirection(), condition.sortField(),
         condition.size());
 
     // 1. 데이터 조회 (size + 1개 조회해서 hasNext 판단)
     List<IndexInfo> result = queryFactory
         .selectFrom(indexInfo)
-        .where(conditions.toArray(new BooleanExpression[0]))
+        .where(conditions.toArray(BooleanExpression[]::new))
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1) // → hasNext 체크를 위해 +1 조회
         .orderBy(CustomQuerydslSortUtils.createOrderSpecifiers(indexInfo, pageable))
@@ -87,11 +92,6 @@ public class CustomIndexInfoRepositoryImpl implements CustomIndexInfoRepository 
           : indexInfo.favorite.isFalse());
     }
 
-    if (c.cursor() != null) {
-      BooleanExpression cursorCondition = buildCursorCondition(c);
-      conditions.add(cursorCondition);
-    }
-
     return conditions;
   }
 
@@ -124,7 +124,7 @@ public class CustomIndexInfoRepositoryImpl implements CustomIndexInfoRepository 
     );
   }
 
-  private BooleanExpression buildCursorCondition(IndexInfoSearchCondition c) {
+  private BooleanExpression gerCursorPredicate(IndexInfoSearchCondition c) {
     String sortField = c.sortField();
     String direction = c.sortDirection();
     String cursor = c.cursor();

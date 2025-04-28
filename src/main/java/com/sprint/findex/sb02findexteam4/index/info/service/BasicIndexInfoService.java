@@ -1,4 +1,4 @@
-package com.sprint.findex.sb02findexteam4.index.info.service.impl;
+package com.sprint.findex.sb02findexteam4.index.info.service;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
@@ -13,8 +13,6 @@ import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
 import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import com.sprint.findex.sb02findexteam4.index.info.repository.IndexInfoRepository;
-import com.sprint.findex.sb02findexteam4.index.info.service.IndexInfoService;
-import com.sprint.findex.sb02findexteam4.index.info.service.IndexInfoValidator;
 import com.sprint.findex.sb02findexteam4.sync.service.AutoSyncConfigService;
 import com.sprint.findex.sb02findexteam4.util.TimeUtils;
 import jakarta.persistence.EntityManager;
@@ -28,14 +26,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-public class IndexInfoServiceImpl implements IndexInfoService {
+public class BasicIndexInfoService implements IndexInfoService {
 
   private final IndexInfoRepository indexInfoRepository;
   private final IndexInfoValidator indexInfoValidator;
   private final AutoSyncConfigService autoSyncConfigService;
   private final JPAQueryFactory queryFactory;
 
-  public IndexInfoServiceImpl(IndexInfoRepository indexInfoRepository,
+  public BasicIndexInfoService(IndexInfoRepository indexInfoRepository,
       IndexInfoValidator indexInfoValidator,
       AutoSyncConfigService autoSyncConfigService,
       EntityManager entityManager) {
