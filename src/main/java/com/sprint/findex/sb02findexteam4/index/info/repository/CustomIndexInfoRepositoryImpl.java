@@ -80,11 +80,11 @@ public class CustomIndexInfoRepositoryImpl implements CustomIndexInfoRepository 
   private List<BooleanExpression> buildConditions(IndexInfoSearchCondition c) {
     List<BooleanExpression> conditions = new ArrayList<>();
 
-    if (c.indexClassification() != null) {
-      conditions.add(indexInfo.indexClassification.eq(c.indexClassification()));
+    if (c.indexClassification() != null && !c.indexClassification().isBlank()) {
+      conditions.add(indexInfo.indexClassification.containsIgnoreCase(c.indexClassification()));
     }
-    if (c.indexName() != null) {
-      conditions.add(indexInfo.indexName.eq(c.indexName()));
+    if (c.indexName() != null && !c.indexName().isBlank()) {
+      conditions.add(indexInfo.indexName.containsIgnoreCase(c.indexName()));
     }
     if (c.favorite() != null) {
       conditions.add(c.favorite()
