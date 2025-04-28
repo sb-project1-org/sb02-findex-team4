@@ -86,7 +86,9 @@ public class BasicIndexDataService implements IndexDataService {
   public CursorPageResponseIndexDataDto getIndexDataList(IndexDataFindCommand command) {
     List<IndexData> result = indexDataRepository.findWithConditions(command);
     boolean hasNext = result.size() > command.size();
-    if (hasNext) result.remove(result.size() - 1);
+    if (hasNext) {
+      result.remove(result.size() - 1);
+    }
 
     List<IndexDataDto> contents = result.stream()
         .map(IndexDataDto::from)
@@ -133,12 +135,13 @@ public class BasicIndexDataService implements IndexDataService {
     List<ChartPoint> ma5 = calculateMovingAverageStrict(pricePoints, MA5DATA_NUM);
     List<ChartPoint> ma20 = calculateMovingAverageStrict(pricePoints, MA20DATA_NUM);
 
-    return new IndexChartDto(indexInfoId, indexInfo.getIndexClassification(), indexInfo.getIndexName(), periodType, pricePoints, ma5, ma20);
+    return new IndexChartDto(indexInfoId, indexInfo.getIndexClassification(),
+        indexInfo.getIndexName(), periodType, pricePoints, ma5, ma20);
   }
 
   @Transactional(readOnly = true)
   @Override
-    public List<IndexPerformanceDto> getFavoriteIndexPerformances(PeriodType periodType) {
+  public List<IndexPerformanceDto> getFavoriteIndexPerformances(PeriodType periodType) {
     List<IndexInfo> favorites = indexInfoRepository.findAllByFavoriteTrue();
     LocalDate today = Instant.now().atZone(ZoneId.of("Asia/Seoul")).toLocalDate();
 
@@ -187,7 +190,7 @@ public class BasicIndexDataService implements IndexDataService {
 
     List<RankedIndexPerformanceDto> rankedList = new ArrayList<>();
     for (int i = 0; i < sortedList.size(); i++) {
-      rankedList.add(new RankedIndexPerformanceDto(sortedList.get(i),i + 1));
+      rankedList.add(new RankedIndexPerformanceDto(sortedList.get(i), i + 1));
     }
 
     return rankedList;
@@ -200,7 +203,8 @@ public class BasicIndexDataService implements IndexDataService {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     PrintWriter writer = new PrintWriter(out, true, StandardCharsets.UTF_8);
 
-    writer.println("baseDate,marketPrice,closingPrice,highPrice,lowPrice,versus,fluctuationRate,tradingQuantity,tradingPrice,marketTotalAmount");
+    writer.println(
+        "baseDate,marketPrice,closingPrice,highPrice,lowPrice,versus,fluctuationRate,tradingQuantity,tradingPrice,marketTotalAmount");
 
     for (IndexData data : dataList) {
       writer.printf("%s,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d\n",
@@ -221,6 +225,7 @@ public class BasicIndexDataService implements IndexDataService {
   }
 
   @Override
+  @Transactional
   public void delete(Long id) {
     IndexData indexData = indexDataRepository.findById(id)
         .orElseThrow(() -> new NotFoundException(INDEX_DATA_NOT_FOUND));
@@ -255,8 +260,7 @@ public class BasicIndexDataService implements IndexDataService {
 
         BigDecimal avg = sum.divide(BigDecimal.valueOf(window), 2, RoundingMode.HALF_UP);
         result.add(new ChartPoint(baseDate.toString(), avg));
-      }
-      else{
+      } else {
         result.add(new ChartPoint(baseDate.toString(), null));
       }
     }

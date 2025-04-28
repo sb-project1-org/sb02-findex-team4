@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
 import com.sprint.findex.sb02findexteam4.exception.ExternalApiException;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateRequest;
-import com.sprint.findex.sb02findexteam4.sync.dto.IndexDataFromApi;
-import com.sprint.findex.sb02findexteam4.sync.dto.MarketIndexResponse;
+import com.sprint.findex.sb02findexteam4.sync.dto.api.IndexDataFromApi;
+import com.sprint.findex.sb02findexteam4.sync.dto.api.MarketIndexResponse;
+import com.sprint.findex.sb02findexteam4.util.TimeUtils;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URI;
@@ -16,6 +17,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,10 +58,21 @@ public class ScheduledTasks {
     }
   }
 
-  public List<IndexDataFromApi> fetchIndexData(String indexName, String bastDateFrom,
-      String baseDateTo) {
+  /**
+   * <h2>api indexData 요청 </h2>
+   * api를 향해 index Data를 요청합니다.
+   *
+   * @param indexName    타겟이 되는 인덱스 이름
+   * @param baseDateFrom Instant 타입의 시작일자
+   * @param baseDateTo   Insatant 타입의 종료일자
+   * @return indexData 를 반환합니다.
+   */
+  public List<IndexDataFromApi> fetchIndexData(String indexName, Instant baseDateFrom,
+      Instant baseDateTo) {
+    String stringBaseDateFrom = TimeUtils.formatedTimeStringNonDashed(baseDateFrom);
+    String stringBaseDateTo = TimeUtils.formatedTimeStringNonDashed(baseDateTo);
     try {
-      HttpResponse<String> response = getResponse(indexName, bastDateFrom, baseDateTo);
+      HttpResponse<String> response = getResponse(indexName, stringBaseDateFrom, stringBaseDateTo);
       MarketIndexResponse indexResponse = mapper.readValue(response.body(),
           MarketIndexResponse.class);
       List<IndexDataFromApi> dataRequests = IndexDataCreateFromResponse(indexResponse);

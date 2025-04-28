@@ -1,4 +1,4 @@
-package com.sprint.findex.sb02findexteam4.sync.dto;
+package com.sprint.findex.sb02findexteam4.sync.dto.search;
 
 import com.sprint.findex.sb02findexteam4.sync.entity.JobResult;
 import com.sprint.findex.sb02findexteam4.sync.entity.JobType;

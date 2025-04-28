@@ -4,7 +4,7 @@ import com.sprint.findex.sb02findexteam4.exception.ErrorResponse;
 import com.sprint.findex.sb02findexteam4.sync.dto.CursorPageResponseSyncJobDto;
 import com.sprint.findex.sb02findexteam4.sync.dto.IndexDataSyncRequest;
 import com.sprint.findex.sb02findexteam4.sync.dto.SyncJobHistoryDto;
-import com.sprint.findex.sb02findexteam4.sync.dto.SyncJobSearchRequest;
+import com.sprint.findex.sb02findexteam4.sync.dto.search.SyncJobSearchRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

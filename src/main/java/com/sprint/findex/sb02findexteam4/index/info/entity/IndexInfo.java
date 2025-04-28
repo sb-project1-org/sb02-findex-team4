@@ -1,5 +1,8 @@
 package com.sprint.findex.sb02findexteam4.index.info.entity;
 
+import static com.sprint.findex.sb02findexteam4.exception.ErrorCode.INDEX_INFO_BAD_REQUEST;
+
+import com.sprint.findex.sb02findexteam4.exception.NormalException;
 import com.sprint.findex.sb02findexteam4.index.data.entity.IndexData;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateCommand;
 import jakarta.persistence.CascadeType;
@@ -60,21 +63,24 @@ public class IndexInfo {
   @OneToMany(mappedBy = "indexInfo", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<IndexData> indexDataList;
 
-  public static IndexInfo create(IndexInfoCreateCommand dto, SourceType sourceType) {
+  public static IndexInfo create(IndexInfoCreateCommand dto) {
+    Validator.validate(dto);
     IndexInfo indexInfo = new IndexInfo();
     indexInfo.updateFromDto(dto);
-    indexInfo.sourceType = sourceType;
+    indexInfo.sourceType = dto.sourceType();
     return indexInfo;
   }
 
   public void updateFromDto(IndexInfoCreateCommand dto) {
-    if (dto.indexClassification() != null && !dto.indexClassification().equals(this.indexClassification)) {
+    if (dto.indexClassification() != null && !dto.indexClassification()
+        .equals(this.indexClassification)) {
       this.indexClassification = dto.indexClassification();
     }
     if (dto.indexName() != null && !dto.indexName().equals(this.indexName)) {
       this.indexName = dto.indexName();
     }
-    if (dto.employedItemsCount() != null && !dto.employedItemsCount().equals(this.employedItemsCount)) {
+    if (dto.employedItemsCount() != null && !dto.employedItemsCount()
+        .equals(this.employedItemsCount)) {
       this.employedItemsCount = dto.employedItemsCount();
     }
     if (dto.basePointInTime() != null && !dto.basePointInTime().equals(this.basePointInTime)) {
@@ -88,5 +94,32 @@ public class IndexInfo {
     }
   }
 
+  public static class Validator {
 
+    public static void validate(IndexInfoCreateCommand dto) {
+      if (dto.indexClassification() == null || dto.indexClassification().isBlank()) {
+        throw new NormalException(INDEX_INFO_BAD_REQUEST);
+      }
+
+      if (dto.indexName() == null || dto.indexName().isBlank()) {
+        throw new NormalException(INDEX_INFO_BAD_REQUEST);
+      }
+
+      if (dto.employedItemsCount() == null || dto.employedItemsCount() < 0) {
+        throw new NormalException(INDEX_INFO_BAD_REQUEST);
+      }
+
+      if (dto.basePointInTime() == null) {
+        throw new NormalException(INDEX_INFO_BAD_REQUEST);
+      }
+
+      if (dto.baseIndex() == null || dto.baseIndex() < 0) {
+        throw new NormalException(INDEX_INFO_BAD_REQUEST);
+      }
+
+      if (dto.favorite() == null) {
+        throw new NormalException(INDEX_INFO_BAD_REQUEST);
+      }
+    }
+  }
 }

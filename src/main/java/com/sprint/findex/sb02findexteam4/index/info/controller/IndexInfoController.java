@@ -1,13 +1,13 @@
 package com.sprint.findex.sb02findexteam4.index.info.controller;
 
 import com.sprint.findex.sb02findexteam4.index.info.dto.CursorPageResponseIndexInfoDto;
+import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateCommand;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoDto;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoSearchCondition;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoSearchRequest;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoSummaryDto;
 import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoUpdateRequest;
-import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import com.sprint.findex.sb02findexteam4.index.info.service.IndexInfoService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Base64;
@@ -40,8 +40,9 @@ public class IndexInfoController {
   @PostMapping
   public ResponseEntity<IndexInfoDto> createIndexInfo(
       @RequestBody IndexInfoCreateRequest indexInfoCreateRequest) {
-    IndexInfoDto indexInfoDto = indexInfoService.registerIndexInfo(indexInfoCreateRequest,
-        SourceType.USER);
+    IndexInfoCreateCommand command = IndexInfoCreateCommand.fromUser(
+        indexInfoCreateRequest);
+    IndexInfoDto indexInfoDto = indexInfoService.registerIndexInfo(command);
     return ResponseEntity.status(HttpStatus.CREATED).body(indexInfoDto);
   }
 

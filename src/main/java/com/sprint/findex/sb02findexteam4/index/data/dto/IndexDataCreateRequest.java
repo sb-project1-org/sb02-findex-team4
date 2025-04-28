@@ -1,6 +1,6 @@
 package com.sprint.findex.sb02findexteam4.index.data.dto;
 
-import com.sprint.findex.sb02findexteam4.sync.dto.IndexDataFromApi;
+import com.sprint.findex.sb02findexteam4.sync.dto.api.IndexDataFromApi;
 import com.sprint.findex.sb02findexteam4.util.TimeUtils;
 import java.math.BigDecimal;
 import lombok.Builder;

@@ -1,6 +1,6 @@
 package com.sprint.findex.sb02findexteam4.index.info.dto;
 
-import com.sprint.findex.sb02findexteam4.sync.dto.Item;
+import com.sprint.findex.sb02findexteam4.sync.dto.api.Item;
 import lombok.Builder;
 
 @Builder

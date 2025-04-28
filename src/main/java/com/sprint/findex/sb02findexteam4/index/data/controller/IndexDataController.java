@@ -39,7 +39,9 @@ public class IndexDataController {
   @PostMapping
   public ResponseEntity<IndexDataResponse> createIndexData(
       @RequestBody IndexDataCreateRequest request) {
+    
     IndexDataResponse createdIndexData = indexDataService.create(request, SourceType.USER);
+
     return ResponseEntity.status(HttpStatus.CREATED).body(createdIndexData);
   }
 
