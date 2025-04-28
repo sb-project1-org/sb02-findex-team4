@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface IndexDataRepositoryCustom {
   List<IndexData> findWithConditions(IndexDataFindCommand command);
+  Long countWithConditions(IndexDataFindCommand command);
   List<IndexData> findAllForCsvExport(IndexDataCsvExportCommand command);
 }

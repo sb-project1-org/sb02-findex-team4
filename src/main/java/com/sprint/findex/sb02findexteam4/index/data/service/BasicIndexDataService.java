@@ -95,12 +95,14 @@ public class BasicIndexDataService implements IndexDataService {
     Long nextIdAfter = contents.isEmpty() ? null : contents.get(contents.size() - 1).id();
     String nextCursor = nextIdAfter != null ? nextIdAfter.toString() : null;
 
+    Long totalElements = indexDataRepository.countWithConditions(command);
+
     return new CursorPageResponseIndexDataDto(
         contents,
         nextCursor,
         nextIdAfter,
         command.size(),
-        contents.size(),
+        totalElements,
         hasNext
     );
   }
