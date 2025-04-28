@@ -12,6 +12,7 @@ import com.sprint.findex.sb02findexteam4.sync.dto.search.SyncJobSearchCondition;
 import com.sprint.findex.sb02findexteam4.sync.entity.QSyncJobHistory;
 import com.sprint.findex.sb02findexteam4.sync.entity.SyncJobHistory;
 import com.sprint.findex.sb02findexteam4.sync.mapper.SyncJobHistoryMapper;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class CustomSyncJobHistoryRepositoryImpl implements CustomSyncJobHistoryR
       conditions.add(cursorPredicate);
     }
 
-    OrderSpecifier<?> orderSpecifier = getOrderSpecifier(condition.sortField(),
+    OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(condition.sortField(),
         condition.sortDirection());
 
     List<SyncJobHistory> result = queryFactory
@@ -58,7 +59,8 @@ public class CustomSyncJobHistoryRepositoryImpl implements CustomSyncJobHistoryR
         .where(countConditions.toArray(BooleanExpression[]::new))
         .fetchOne();
 
-    return SyncJobHistoryMapper.toCursorPageResponseDto(content, hasNext, totalCount);
+    return SyncJobHistoryMapper.toCursorPageResponseDto(content, hasNext, totalCount,
+        condition.sortField());
   }
 
   private List<BooleanExpression> buildConditions(SyncJobSearchCondition c) {
@@ -88,6 +90,9 @@ public class CustomSyncJobHistoryRepositoryImpl implements CustomSyncJobHistoryR
     if (c.status() != null) {
       conditions.add(syncJobHistory.jobResult.eq(c.status()));
     }
+    if ("targetDate".equals(c.sortField())) {
+      conditions.add(syncJobHistory.targetDate.isNotNull());
+    }
 
     return conditions;
   }
@@ -95,10 +100,11 @@ public class CustomSyncJobHistoryRepositoryImpl implements CustomSyncJobHistoryR
   private BooleanExpression getCursorPredicate(SyncJobSearchCondition condition) {
     String sortField = condition.sortField();
     String direction = condition.sortDirection();
-    Long cursor = condition.cursor();
+    Instant cursor = condition.cursor();
+    Long idAfter = condition.idAfter();
 
     if (sortField == null || direction == null) {
-      throw new NormalException(ErrorCode.INDEX_INFO_BAD_REQUEST);
+      throw new NormalException(ErrorCode.SYNC_JOB_HISTORY_BAD_REQUEST);
     }
 
     if (cursor == null) {
@@ -107,16 +113,37 @@ public class CustomSyncJobHistoryRepositoryImpl implements CustomSyncJobHistoryR
 
     boolean isDesc = "desc".equalsIgnoreCase(direction);
 
-    return isDesc
-        ? syncJobHistory.id.lt(cursor)
-        : syncJobHistory.id.gt(cursor);
+    if ("jobTime".equals(sortField)) {
+      return isDesc
+          ? syncJobHistory.jobTime.lt(cursor)
+          : syncJobHistory.jobTime.gt(cursor);
+    } else {
+      // targetDate
+      if (idAfter == null) {
+        throw new NormalException(ErrorCode.SYNC_JOB_HISTORY_BAD_REQUEST);
+      }
+
+      return isDesc
+          ? syncJobHistory.targetDate.lt(cursor)
+          .or(syncJobHistory.targetDate.eq(cursor).and(syncJobHistory.id.lt(idAfter)))
+          : syncJobHistory.targetDate.gt(cursor)
+              .or(syncJobHistory.targetDate.eq(cursor).and(syncJobHistory.id.gt(idAfter)));
+    }
   }
 
-  private OrderSpecifier<?> getOrderSpecifier(String sortField, String sortDirection) {
+  private OrderSpecifier<?>[] getOrderSpecifier(String sortField, String sortDirection) {
     Order order = "desc".equalsIgnoreCase(sortDirection) ? Order.DESC : Order.ASC;
 
-    return "jobTime".equals(sortField)
-        ? new OrderSpecifier<>(order, syncJobHistory.jobTime)
-        : new OrderSpecifier<>(order, syncJobHistory.targetDate);
+    if ("jobTime".equals(sortField)) {
+      return new OrderSpecifier<?>[] {
+          new OrderSpecifier<>(order, syncJobHistory.jobTime)
+      };
+    } else {
+      // targetDate로 정렬할때는 id로 보조정렬 추가
+      return new OrderSpecifier<?>[] {
+          new OrderSpecifier<>(order, syncJobHistory.targetDate),
+          new OrderSpecifier<>(order, syncJobHistory.id)
+      };
+    }
   }
 }
