@@ -1,9 +1,9 @@
 package com.sprint.findex.sb02findexteam4.sync.controller;
 
 import com.sprint.findex.sb02findexteam4.swagger.AutoSyncConfigApi;
-import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigCondition;
+import com.sprint.findex.sb02findexteam4.sync.dto.search.AutoSyncConfigCondition;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigDto;
-import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigSearchRequest;
+import com.sprint.findex.sb02findexteam4.sync.dto.search.AutoSyncConfigSearchRequest;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigUpdateCommand;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigUpdateRequest;
 import com.sprint.findex.sb02findexteam4.sync.dto.CursorPageResponseAutoSyncConfigDto;

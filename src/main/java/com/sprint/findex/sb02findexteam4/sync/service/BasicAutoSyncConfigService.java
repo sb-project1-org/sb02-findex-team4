@@ -5,7 +5,7 @@ import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
 import com.sprint.findex.sb02findexteam4.exception.InvalidRequestException;
 import com.sprint.findex.sb02findexteam4.exception.NotFoundException;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
-import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigCondition;
+import com.sprint.findex.sb02findexteam4.sync.dto.search.AutoSyncConfigCondition;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigDto;
 import com.sprint.findex.sb02findexteam4.sync.dto.AutoSyncConfigUpdateCommand;
 import com.sprint.findex.sb02findexteam4.sync.dto.CursorPageResponseAutoSyncConfigDto;
