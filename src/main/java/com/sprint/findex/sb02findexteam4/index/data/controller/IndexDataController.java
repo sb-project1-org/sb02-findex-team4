@@ -3,6 +3,7 @@ package com.sprint.findex.sb02findexteam4.index.data.controller;
 
 import com.sprint.findex.sb02findexteam4.index.data.dto.CursorPageResponseIndexDataDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexChartDto;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataFindCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCsvExportCommand;
@@ -39,8 +40,9 @@ public class IndexDataController {
   @PostMapping
   public ResponseEntity<IndexDataResponse> createIndexData(
       @RequestBody IndexDataCreateRequest request) {
-    
-    IndexDataResponse createdIndexData = indexDataService.create(request, SourceType.USER);
+
+    IndexDataResponse createdIndexData = indexDataService.create(
+        IndexDataCreateCommand.fromUser(request, SourceType.USER));
 
     return ResponseEntity.status(HttpStatus.CREATED).body(createdIndexData);
   }

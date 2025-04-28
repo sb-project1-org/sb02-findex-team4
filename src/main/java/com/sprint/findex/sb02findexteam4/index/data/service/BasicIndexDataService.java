@@ -9,21 +9,19 @@ import com.sprint.findex.sb02findexteam4.exception.NotFoundException;
 import com.sprint.findex.sb02findexteam4.index.data.dto.ChartPoint;
 import com.sprint.findex.sb02findexteam4.index.data.dto.CursorPageResponseIndexDataDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexChartDto;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCsvExportCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataFindCommand;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexPerformanceDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.RankedIndexPerformanceDto;
 import com.sprint.findex.sb02findexteam4.index.data.entity.IndexData;
-import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateRequest;
-import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
-import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.entity.PeriodType;
 import com.sprint.findex.sb02findexteam4.index.data.repository.IndexDataRepository;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
-import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import com.sprint.findex.sb02findexteam4.index.info.repository.IndexInfoRepository;
-import com.sprint.findex.sb02findexteam4.util.TimeUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
@@ -32,19 +30,22 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BasicIndexDataService implements IndexDataService {
 
   private final IndexDataRepository indexDataRepository;
@@ -55,19 +56,17 @@ public class BasicIndexDataService implements IndexDataService {
 
   @Transactional
   @Override
-  public IndexDataResponse create(IndexDataCreateRequest request, SourceType sourceType) {
-    IndexInfo indexInfo = indexInfoRepository.findById(request.indexInfoId())
+  public IndexDataResponse create(IndexDataCreateCommand command) {
+    IndexInfo indexInfo = indexInfoRepository.findById(command.indexInfoId())
         .orElseThrow(() -> new NotFoundException(INDEX_INFO_NOT_FOUND));
 
-    Instant instant = TimeUtils.formatedTimeInstant(request.baseDate());
-
-    if (isDuplicated(request.indexInfoId(), instant)) {
+    if (isDuplicated(command.indexInfoId(), command.baseDate())) {
       throw new AlreadyExistsException(INDEX_DATA_ALREADY_EXISTS);
     }
 
-    IndexData indexData = IndexData.of(request, instant, indexInfo, sourceType);
+    IndexData indexData = IndexData.from(indexInfo, command);
     IndexData createdIndexData = indexDataRepository.save(indexData);
-
+    log.info("[BasicIndexDataService] Method create - {} ", indexData.getId());
     return IndexDataResponse.from(createdIndexData);
   }
 
@@ -143,18 +142,22 @@ public class BasicIndexDataService implements IndexDataService {
   @Override
   public List<IndexPerformanceDto> getFavoriteIndexPerformances(PeriodType periodType) {
     List<IndexInfo> favorites = indexInfoRepository.findAllByFavoriteTrue();
-    LocalDate today = Instant.now().atZone(ZoneId.of("Asia/Seoul")).toLocalDate();
+    LocalDate today = LocalDate.now();
 
+    //최신 날짜로 부터 1달 전의 값을 구해야 한다.
     return favorites.stream()
         .map(indexInfo -> {
-          IndexData current = indexDataRepository.findByIndexInfoIdAndBaseDateOnlyDateMatch(
-              indexInfo.getId(), today
-          ).orElse(null);
+          log.info("[BasicIndexDataService] method getFavoriteIndexPerformances, favorite: {} ",
+              indexInfo.getIndexName());
+          IndexData current = indexDataRepository.findTopByIndexInfoIdOrderByBaseDateDesc(
+              indexInfo.getId()).orElse(null);
+
           IndexData past = indexDataRepository.findByIndexInfoIdAndBaseDateOnlyDateMatch(
                   indexInfo.getId(),
                   calculateBaseDate(periodType))
               .orElse(null);
-          return IndexPerformanceDto.of(indexInfo, current, past);
+          return IndexPerformanceDto.of(indexInfo, current,
+              past);
         })
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
@@ -165,7 +168,6 @@ public class BasicIndexDataService implements IndexDataService {
   public List<RankedIndexPerformanceDto> getIndexPerformanceRank(Long indexInfoId,
       PeriodType periodType, int limit) {
     LocalDate baseDate = calculateBaseDate(periodType);
-    LocalDate today = Instant.now().atZone(ZoneId.of("Asia/Seoul")).toLocalDate();
 
     List<IndexInfo> targetInfos = (indexInfoId != null)
         ? indexInfoRepository.findAllById(List.of(indexInfoId))
@@ -173,9 +175,8 @@ public class BasicIndexDataService implements IndexDataService {
 
     List<IndexPerformanceDto> sortedList = targetInfos.stream()
         .map(info -> {
-          IndexData current = indexDataRepository
-              .findByIndexInfoIdAndBaseDateOnlyDateMatch(info.getId(), today)
-              .orElse(null);
+          IndexData current = indexDataRepository.findTopByIndexInfoIdOrderByBaseDateDesc(
+              info.getId()).orElse(null);
 
           IndexData before = indexDataRepository
               .findByIndexInfoIdAndBaseDateOnlyDateMatch(info.getId(), baseDate)
@@ -234,37 +235,32 @@ public class BasicIndexDataService implements IndexDataService {
   }
 
   private List<ChartPoint> calculateMovingAverageStrict(List<ChartPoint> prices, int window) {
-    List<ChartPoint> result = new ArrayList<>();
 
-    Map<LocalDate, BigDecimal> priceMap = prices.stream()
-        .collect(Collectors.toMap(
-            p -> LocalDate.parse(p.date()),
-            ChartPoint::value
-        ));
-
-    List<LocalDate> sortedDates = prices.stream()
-        .map(p -> LocalDate.parse(p.date()))
-        .sorted()
+    // 날짜 오름차순 정렬
+    List<ChartPoint> pts = prices.stream()
+        .sorted(Comparator.comparing(p -> LocalDate.parse(p.date())))
         .toList();
 
-    for (LocalDate baseDate : sortedDates) {
-      List<LocalDate> pastDates = new ArrayList<>();
-      for (int i = 1; i <= window; i++) {
-        pastDates.add(baseDate.minusDays(i));
+    Deque<BigDecimal> win = new ArrayDeque<>(window);
+    BigDecimal sum = BigDecimal.ZERO;
+    List<ChartPoint> result = new ArrayList<>(pts.size());
+
+    for (ChartPoint p : pts) {
+      BigDecimal v = p.value();
+      win.addLast(v);
+      sum = sum.add(v);
+
+      if (win.size() > window)             // 윈도 초과 시 맨 앞 제거
+      {
+        sum = sum.subtract(win.removeFirst());
       }
 
-      if (pastDates.stream().allMatch(priceMap::containsKey)) {
-        BigDecimal sum = pastDates.stream()
-            .map(priceMap::get)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+      BigDecimal avg = (win.size() == window)
+          ? sum.divide(BigDecimal.valueOf(window), 2, RoundingMode.HALF_UP)
+          : null;                      // 아직 데이터 부족
 
-        BigDecimal avg = sum.divide(BigDecimal.valueOf(window), 2, RoundingMode.HALF_UP);
-        result.add(new ChartPoint(baseDate.toString(), avg));
-      } else {
-        result.add(new ChartPoint(baseDate.toString(), null));
-      }
+      result.add(new ChartPoint(p.date(), avg));
     }
-
     return result;
   }
 

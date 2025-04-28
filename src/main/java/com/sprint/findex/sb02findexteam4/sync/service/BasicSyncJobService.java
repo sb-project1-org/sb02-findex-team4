@@ -2,7 +2,7 @@ package com.sprint.findex.sb02findexteam4.sync.service;
 
 import com.sprint.findex.sb02findexteam4.exception.ErrorCode;
 import com.sprint.findex.sb02findexteam4.exception.NotFoundException;
-import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateRequest;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.entity.IndexData;
@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,7 +60,7 @@ public class BasicSyncJobService implements SyncJobService {
    */
   @Override
   @Transactional
-  @Scheduled(cron = "0 * * * * *")
+//  @Scheduled(cron = "0 * * * * *")
   public void syncAll() {
     Instant now = Instant.now();
     try {
@@ -194,8 +193,8 @@ public class BasicSyncJobService implements SyncJobService {
               indexData.getId());
         } else {
           IndexDataResponse response = indexDataService.create(
-              IndexDataCreateRequest.from(indexInfo.getId(), indexDataFromApi),
-              SourceType.OPEN_API);
+              IndexDataCreateCommand.fromApi(indexInfo.getId(), indexDataFromApi,
+                  SourceType.OPEN_API));
           log.info("[Basic Sync Job Service] syncIndexDataFromApi - create Index Data : {}",
               response.id());
         }
@@ -314,8 +313,8 @@ public class BasicSyncJobService implements SyncJobService {
           log.info("지수 정보, 날짜 불일치로 인한 지수 데이터 생성");
           //지수 데이터를 하나 만든다.
           IndexDataResponse dataResponse = indexDataService.create(
-              IndexDataCreateRequest.from(indexInfoId, indexDataFromApi),
-              SourceType.OPEN_API);
+              IndexDataCreateCommand.fromApi(indexInfo.getId(), indexDataFromApi,
+                  SourceType.OPEN_API));
           log.info("지수 데이터 생성 : {}", dataResponse.id());
 
           SyncJobHistory syncJobHistory = syncJobHistoryService.saveHistory(
