@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Tag(name = "Áö¼ö µ¥ÀÌÅÍ ¸ñ·Ï Á¶È¸", description = "Áö¼ö µ¥ÀÌÅÍ °ü¸® API")
+@Tag(name = "ì§€ìˆ˜ ë°ì´í„° ëª©ë¡ ì¡°íšŒ", description = "ì§€ìˆ˜ ë°ì´í„° ê´€ë¦¬ API")
 public interface IndexDataApi {
 
-  @Operation(summary = "Áö¼ö µ¥ÀÌÅÍ ¸ñ·Ï Á¶È¸", description = "Áö¼ö µ¥ÀÌÅÍ ¸ñ·ÏÀ» Á¶È¸ÇÕ´Ï´Ù. ÇÊÅÍ¸µ, Á¤·Ä, Ä¿¼­ ±â¹İ ÆäÀÌÁö³×ÀÌ¼ÇÀ» Áö¿øÇÕ´Ï´Ù.", responses = {
-      @ApiResponse(responseCode = "200", description = "Áö¼ö µ¥ÀÌÅÍ ¸ñ·Ï Á¶È¸ ¼º°ø"),
-      @ApiResponse(responseCode = "400", description = "Àß¸øµÈ ¿äÃ»(À¯È¿ÇÏÁö ¾ÊÀº ÇÊÅÍ °ª µî)"),
-      @ApiResponse(responseCode = "500", description = "¼­¹ö ¿À·ù")
+  @Operation(summary = "ì§€ìˆ˜ ë°ì´í„° ëª©ë¡ ì¡°íšŒ", description = "ì§€ìˆ˜ ë°ì´í„° ëª©ë¡ì„ ì¡°íšŒí•©ë‹ˆë‹¤. í•„í„°ë§, ì •ë ¬, ì»¤ì„œ ê¸°ë°˜ í˜ì´ì§€ë„¤ì´ì…˜ì„ ì§€ì›í•©ë‹ˆë‹¤.", responses = {
+      @ApiResponse(responseCode = "200", description = "ì§€ìˆ˜ ë°ì´í„° ëª©ë¡ ì¡°íšŒ ì„±ê³µ"),
+      @ApiResponse(responseCode = "400", description = "ì˜ëª»ëœ ìš”ì²­(ìœ íš¨í•˜ì§€ ì•Šì€ í•„í„° ê°’ ë“±)"),
+      @ApiResponse(responseCode = "500", description = "ì„œë²„ ì˜¤ë¥˜")
   })
   ResponseEntity<CursorPageResponseIndexDataDto> getIndexDataList(
       @RequestParam(required = false) Long indexInfoId,
@@ -35,57 +35,57 @@ public interface IndexDataApi {
       @RequestParam(defaultValue = "desc") String sortDirection,
       @RequestParam(defaultValue = "10") int size);
 
-  @Operation(summary = "Áö¼ö µ¥ÀÌÅÍ µî·Ï", description = "»õ·Î¿î Áö¼ö µ¥ÀÌÅÍ¸¦ µî·ÏÇÕ´Ï´Ù.", responses = {
-      @ApiResponse(responseCode = "201", description = "Áö¼ö µ¥ÀÌÅÍ »ı¼º ¼º°ø"),
-      @ApiResponse(responseCode = "400", description = "Àß¸øµÈ ¿äÃ»(À¯È¿ÇÏÁö ¾ÊÀº µ¥ÀÌÅÍ °ª µî)"),
-      @ApiResponse(responseCode = "404", description = "ÂüÁ¶ÇÏ´Â Áö¼ö Á¤º¸¸¦ Ã£À» ¼ö ¾øÀ½"),
-      @ApiResponse(responseCode = "500", description = "¼­¹ö ¿À·ù")})
+  @Operation(summary = "ì§€ìˆ˜ ë°ì´í„° ë“±ë¡", description = "ìƒˆë¡œìš´ ì§€ìˆ˜ ë°ì´í„°ë¥¼ ë“±ë¡í•©ë‹ˆë‹¤.", responses = {
+      @ApiResponse(responseCode = "201", description = "ì§€ìˆ˜ ë°ì´í„° ìƒì„± ì„±ê³µ"),
+      @ApiResponse(responseCode = "400", description = "ì˜ëª»ëœ ìš”ì²­(ìœ íš¨í•˜ì§€ ì•Šì€ ë°ì´í„° ê°’ ë“±)"),
+      @ApiResponse(responseCode = "404", description = "ì°¸ì¡°í•˜ëŠ” ì§€ìˆ˜ ì •ë³´ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŒ"),
+      @ApiResponse(responseCode = "500", description = "ì„œë²„ ì˜¤ë¥˜")})
   ResponseEntity<IndexDataResponse> createIndexData(
       @RequestBody IndexDataCreateRequest request);
 
-  @Operation(summary = "Áö¼ö µ¥ÀÌÅÍ »èÁ¦", description = "Áö¼ö µ¥ÀÌÅÍ¸¦ »èÁ¦ÇÕ´Ï´Ù.", responses = {
-      @ApiResponse(responseCode = "204", description = "Áö¼ö µ¥ÀÌÅÍ »èÁ¦ ¼º°ø"),
-      @ApiResponse(responseCode = "404", description = "»èÁ¦ÇÒ Áö¼ö µ¥ÀÌÅÍ¸¦ Ã£À» ¼ö ¾øÀ½"),
-      @ApiResponse(responseCode = "500", description = "¼­¹ö ¿À·ù")})
+  @Operation(summary = "ì§€ìˆ˜ ë°ì´í„° ì‚­ì œ", description = "ì§€ìˆ˜ ë°ì´í„°ë¥¼ ì‚­ì œí•©ë‹ˆë‹¤.", responses = {
+      @ApiResponse(responseCode = "204", description = "ì§€ìˆ˜ ë°ì´í„° ì‚­ì œ ì„±ê³µ"),
+      @ApiResponse(responseCode = "404", description = "ì‚­ì œí•  ì§€ìˆ˜ ë°ì´í„°ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŒ"),
+      @ApiResponse(responseCode = "500", description = "ì„œë²„ ì˜¤ë¥˜")})
   ResponseEntity<Void> deleteIndexData(@PathVariable long id);
 
-  @Operation(summary = "Áö¼ö µ¥ÀÌÅÍ ¼öÁ¤", description = "±âÁ¸ Áö¼ö µ¥ÀÌÅÍ¸¦ ¼öÁ¤ÇÕ´Ï´Ù.", responses = {
-      @ApiResponse(responseCode = "200", description = "Áö¼ö µ¥ÀÌÅÍ ¼öÁ¤ ¼º°ø"),
-      @ApiResponse(responseCode = "400", description = "Àß¸øµÈ ¿äÃ»(À¯È¿ÇÏÁö ¾ÊÀº µ¥ÀÌÅÍ °ª µî)"),
-      @ApiResponse(responseCode = "404", description = "¼öÁ¤ÇÒ Áö¼ö µ¥ÀÌÅÍ¸¦ Ã£À» ¼ö ¾øÀ½"),
-      @ApiResponse(responseCode = "500", description = "¼­¹ö ¿À·ù")})
+  @Operation(summary = "ì§€ìˆ˜ ë°ì´í„° ìˆ˜ì •", description = "ê¸°ì¡´ ì§€ìˆ˜ ë°ì´í„°ë¥¼ ìˆ˜ì •í•©ë‹ˆë‹¤.", responses = {
+      @ApiResponse(responseCode = "200", description = "ì§€ìˆ˜ ë°ì´í„° ìˆ˜ì • ì„±ê³µ"),
+      @ApiResponse(responseCode = "400", description = "ì˜ëª»ëœ ìš”ì²­(ìœ íš¨í•˜ì§€ ì•Šì€ ë°ì´í„° ê°’ ë“±)"),
+      @ApiResponse(responseCode = "404", description = "ìˆ˜ì •í•  ì§€ìˆ˜ ë°ì´í„°ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŒ"),
+      @ApiResponse(responseCode = "500", description = "ì„œë²„ ì˜¤ë¥˜")})
   ResponseEntity<IndexDataResponse> updateIndexData(@PathVariable Long id,
       @RequestBody IndexDataUpdateRequest indexDataRequest);
 
-  @Operation(summary = "Áö¼ö Â÷Æ® Á¶È¸", description = "Áö¼öÀÇ Â÷Æ® µ¥ÀÌÅÍ¸¦ Á¶È¸ÇÕ´Ï´Ù.", responses = {
-      @ApiResponse(responseCode = "200", description = "Â÷Æ® µ¥ÀÌÅÍ ¼öÁ¤ ¼º°ø"),
-      @ApiResponse(responseCode = "400", description = "Àß¸øµÈ ¿äÃ»(À¯È¿ÇÏÁö ¾ÊÀº ±â°£ À¯Çü µî)"),
-      @ApiResponse(responseCode = "404", description = "Áö¼ö Á¤º¸¸¦ Ã£À» ¼ö ¾øÀ½"),
-      @ApiResponse(responseCode = "500", description = "¼­¹ö ¿À·ù")})
+  @Operation(summary = "ì§€ìˆ˜ ì°¨íŠ¸ ì¡°íšŒ", description = "ì§€ìˆ˜ì˜ ì°¨íŠ¸ ë°ì´í„°ë¥¼ ì¡°íšŒí•©ë‹ˆë‹¤.", responses = {
+      @ApiResponse(responseCode = "200", description = "ì°¨íŠ¸ ë°ì´í„° ìˆ˜ì • ì„±ê³µ"),
+      @ApiResponse(responseCode = "400", description = "ì˜ëª»ëœ ìš”ì²­(ìœ íš¨í•˜ì§€ ì•Šì€ ê¸°ê°„ ìœ í˜• ë“±)"),
+      @ApiResponse(responseCode = "404", description = "ì§€ìˆ˜ ì •ë³´ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŒ"),
+      @ApiResponse(responseCode = "500", description = "ì„œë²„ ì˜¤ë¥˜")})
   ResponseEntity<IndexChartDto> getChartData(
       @PathVariable("id") Long indexInfoId,
       @RequestParam(value = "periodType", defaultValue = "DAILY") PeriodType periodType);
 
-  @Operation(summary = "Áö¼ö ¼º°ú ·©Å· Á¶È¸", description = "Áö¼öÀÇ ¼º°ú ºĞ¼® ·©Å·À» Á¶È¸ÇÕ´Ï´Ù.", responses = {
-      @ApiResponse(responseCode = "200", description = "¼º°ú ·©Å· Á¶È¸ ¼º°ø"),
-      @ApiResponse(responseCode = "400", description = "Àß¸øµÈ ¿äÃ»(À¯È¿ÇÏÁö ¾ÊÀº ±â°£ À¯Çü µî)"),
-      @ApiResponse(responseCode = "500", description = "¼­¹ö ¿À·ù")})
+  @Operation(summary = "ì§€ìˆ˜ ì„±ê³¼ ë­í‚¹ ì¡°íšŒ", description = "ì§€ìˆ˜ì˜ ì„±ê³¼ ë¶„ì„ ë­í‚¹ì„ ì¡°íšŒí•©ë‹ˆë‹¤.", responses = {
+      @ApiResponse(responseCode = "200", description = "ì„±ê³¼ ë­í‚¹ ì¡°íšŒ ì„±ê³µ"),
+      @ApiResponse(responseCode = "400", description = "ì˜ëª»ëœ ìš”ì²­(ìœ íš¨í•˜ì§€ ì•Šì€ ê¸°ê°„ ìœ í˜• ë“±)"),
+      @ApiResponse(responseCode = "500", description = "ì„œë²„ ì˜¤ë¥˜")})
   ResponseEntity<List<RankedIndexPerformanceDto>> getPerformanceRank(
       @RequestParam(required = false) Long indexInfoId,
       @RequestParam(defaultValue = "DAILY") PeriodType periodType,
       @RequestParam(defaultValue = "10") int limit
   );
 
-  @Operation(summary = "°ü½É Áö¼ö ¼º°ú Á¶È¸", description = "Áñ°ÜÃ£±â·Î µî·ÏµÈ Áö¼öµéÀÇ ¼º°ú¸¦ Á¶È¸ÇÕ´Ï´Ù.", responses = {
-      @ApiResponse(responseCode = "200", description = "°ü½É Áö¼ö ¼º°ú Á¶È¸ ¼º°ø"),
-      @ApiResponse(responseCode = "500", description = "¼­¹ö ¿À·ù")})
+  @Operation(summary = "ê´€ì‹¬ ì§€ìˆ˜ ì„±ê³¼ ì¡°íšŒ", description = "ì¦ê²¨ì°¾ê¸°ë¡œ ë“±ë¡ëœ ì§€ìˆ˜ë“¤ì˜ ì„±ê³¼ë¥¼ ì¡°íšŒí•©ë‹ˆë‹¤.", responses = {
+      @ApiResponse(responseCode = "200", description = "ê´€ì‹¬ ì§€ìˆ˜ ì„±ê³¼ ì¡°íšŒ ì„±ê³µ"),
+      @ApiResponse(responseCode = "500", description = "ì„œë²„ ì˜¤ë¥˜")})
   ResponseEntity<List<IndexPerformanceDto>> getFavoriteIndexPerformances(
       @RequestParam(defaultValue = "DAILY") PeriodType periodType);
 
-  @Operation(summary = "Áö¼ö µ¥ÀÌÅÍ CSV export", description = "Áö¼ö µ¥ÀÌÅÍ¸¦ CSV ÆÄÀÏ·Î exportÇÕ´Ï´Ù.", responses = {
-      @ApiResponse(responseCode = "200", description = "CSV ÆÄÀÏ »ı¼º ¼º°ø"),
-      @ApiResponse(responseCode = "400", description = "Àß¸øµÈ ¿äÃ»(À¯È¿ÇÏÁö ¾ÊÀº ÇÊÅÍ °ª µî"),
-      @ApiResponse(responseCode = "500", description = "¼­¹ö ¿À·ù")})
+  @Operation(summary = "ì§€ìˆ˜ ë°ì´í„° CSV export", description = "ì§€ìˆ˜ ë°ì´í„°ë¥¼ CSV íŒŒì¼ë¡œ exportí•©ë‹ˆë‹¤.", responses = {
+      @ApiResponse(responseCode = "200", description = "CSV íŒŒì¼ ìƒì„± ì„±ê³µ"),
+      @ApiResponse(responseCode = "400", description = "ì˜ëª»ëœ ìš”ì²­(ìœ íš¨í•˜ì§€ ì•Šì€ í•„í„° ê°’ ë“±"),
+      @ApiResponse(responseCode = "500", description = "ì„œë²„ ì˜¤ë¥˜")})
   ResponseEntity<byte[]> exportCsv(
       @RequestParam(required = false) Long indexInfoId,
       @RequestParam(required = false) String startDate,

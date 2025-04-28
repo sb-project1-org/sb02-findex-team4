@@ -12,10 +12,10 @@ public record CursorPageResponseSyncJobDto(
     )
     List<SyncJobHistoryDto> content,
     @Schema(
-        description = "다음 페이지 커서 (ID 기반)",
-        example = "1"
+        description = "다음 페이지 커서 (날짜 스트링 기반)",
+        example = "2025-04-20"
     )
-    Long nextCursor,
+    String nextCursor,
     @Schema(
         description = "다음 요소의 ID",
         example = "1"
