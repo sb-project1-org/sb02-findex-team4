@@ -18,6 +18,15 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
 
   Optional<IndexData> findByIndexInfoIdAndBaseDate(Long indexInfoId, Instant today);
 
+  @Query(value = """
+      SELECT *
+      FROM   index_data
+      WHERE  index_info_id = :id
+      ORDER  BY ABS(EXTRACT(EPOCH FROM (base_date - :target)))   -- 거리(초) ASC
+      LIMIT  1
+      """, nativeQuery = true)
+  Optional<IndexData> findClosestTo(Long id, LocalDate target);
+
   @Query("SELECT i FROM IndexData i " +
       "WHERE i.indexInfo.id = :indexInfoId " +
       "AND FUNCTION('DATE', i.baseDate) = :baseDate")
