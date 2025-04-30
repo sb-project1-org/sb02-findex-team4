@@ -43,6 +43,11 @@ public class TimeUtils {
         .format(yyyyMMdd);
   }
 
+  public static String formatedTimeStringNonDashed(LocalDate localDate) {
+    return localDate.format(yyyyMMdd);
+  }
+
+
   /**
    * <h2>String: yyyy-MM-dd -> Instant 타입 변환</h2>
    * yyyy-MM-dd를 Instant 타입으로 변환한다. 외부 입력을 받아서 DB에 저장할 때 사용한다.
@@ -74,10 +79,11 @@ public class TimeUtils {
    *
    * @return Instant 타입, yyyy-MM-dd
    */
-  public static Instant oneMonthAgoDateToString() {
+  public static LocalDate oneMonthAgoDateToString() {
     ZonedDateTime oneMonthAgo = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).minusMonths(1);
     //yyyy-mm-dd 포맷
-    return oneMonthAgo.toInstant();
+    return oneMonthAgo.toLocalDate();
   }
+
 
 }

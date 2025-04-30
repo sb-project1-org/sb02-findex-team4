@@ -11,9 +11,7 @@ import com.sprint.findex.sb02findexteam4.index.info.dto.IndexInfoUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
 import com.sprint.findex.sb02findexteam4.index.info.repository.IndexInfoRepository;
 import com.sprint.findex.sb02findexteam4.sync.service.AutoSyncConfigService;
-import com.sprint.findex.sb02findexteam4.util.TimeUtils;
 import jakarta.persistence.EntityManager;
-import java.time.Instant;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,8 +84,7 @@ public class BasicIndexInfoService implements IndexInfoService {
 
     if (updateDto.basePointInTime() != null &&
         !updateDto.basePointInTime().equals(indexInfo.getBasePointInTime())) {
-      Instant basePointInTimeInstant = TimeUtils.formatedTimeInstant(updateDto.basePointInTime());
-      indexInfo.setBasePointInTime(basePointInTimeInstant);
+      indexInfo.setBasePointInTime(updateDto.basePointInTime());
     }
 
     if (updateDto.baseIndex() != null &&

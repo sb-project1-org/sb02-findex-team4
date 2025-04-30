@@ -1,11 +1,12 @@
 package com.sprint.findex.sb02findexteam4.index.info.dto;
 
-import java.time.Instant;
+import java.time.LocalDate;
 
 public record IndexInfoUpdateRequest(
     Integer employedItemsCount,
-    String basePointInTime,
+    LocalDate basePointInTime,
     Double baseIndex,
     Boolean favorite
 ) {
+
 }

@@ -17,7 +17,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,45 +47,39 @@ public class ScheduledTasks {
   public List<IndexInfoCreateRequest> fetchIndexInfo() {
     try {
       HttpResponse<String> response = getResponse(null, null, null);
+
       MarketIndexResponse indexResponse = mapper.readValue(response.body(),
           MarketIndexResponse.class);
-      List<IndexInfoCreateRequest> infoRequests = IndexInfoCreateFromResponse(
-          indexResponse);
-      return infoRequests;
+
+      return indexResponse.response().body().items().item().stream().map(IndexInfoCreateRequest::of)
+          .toList();
     } catch (Exception e) {
       log.error("[ScheduledTask] fetchIndexInfo - failed Method");
       throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
     }
   }
 
-  /**
-   * <h2>api indexData 요청 </h2>
-   * api를 향해 index Data를 요청합니다.
-   *
-   * @param indexName    타겟이 되는 인덱스 이름
-   * @param baseDateFrom Instant 타입의 시작일자
-   * @param baseDateTo   Insatant 타입의 종료일자
-   * @return indexData 를 반환합니다.
-   */
-  public List<IndexDataFromApi> fetchIndexData(String indexName, Instant baseDateFrom,
-      Instant baseDateTo) {
-    String stringBaseDateFrom = TimeUtils.formatedTimeStringNonDashed(baseDateFrom);
-    String stringBaseDateTo = TimeUtils.formatedTimeStringNonDashed(baseDateTo);
+  public List<IndexDataFromApi> fetchIndexData(String indexName, LocalDate baseDateFrom,
+      LocalDate baseDateTo) {
     try {
-      HttpResponse<String> response = getResponse(indexName, stringBaseDateFrom, stringBaseDateTo);
+      HttpResponse<String> response = getResponse(indexName, baseDateFrom, baseDateTo);
+
       MarketIndexResponse indexResponse = mapper.readValue(response.body(),
           MarketIndexResponse.class);
-      List<IndexDataFromApi> dataRequests = IndexDataCreateFromResponse(indexResponse);
-      log.info("[ScheduledTask] fetchIndexData - call Api Response");
-      return dataRequests;
+
+      return indexResponse.response().body().items().item().stream().map(IndexDataFromApi::of)
+          .toList();
+
     } catch (Exception e) {
+
       log.error("[ScheduledTask] fetchIndexData - failed Method");
+
       throw new ExternalApiException(ErrorCode.EXTERNAL_API_BAD_GATE_WAY);
     }
   }
 
-  private HttpResponse<String> getResponse(String indexName, String bastDateFrom,
-      String baseDateTo) {
+  private HttpResponse<String> getResponse(String indexName, LocalDate bastDateFrom,
+      LocalDate baseDateTo) {
     try {
       URI uri;
       if (bastDateFrom == null && baseDateTo == null) {
@@ -115,7 +109,7 @@ public class ScheduledTasks {
   }
 
   private URI getUri() {
-    return UriComponentsBuilder.fromHttpUrl(BASE_URL)
+    return UriComponentsBuilder.fromUriString(BASE_URL)
         .queryParam("serviceKey", encodeServiceKey)
         .queryParam("resultType", "json")
         .queryParam("pageNo", 1)
@@ -123,29 +117,19 @@ public class ScheduledTasks {
         .build(true).toUri();
   }
 
-  private URI getUri(String indexName, String bastDateFrom, String baseDateTo) {
+  private URI getUri(String indexName, LocalDate baseDateFrom, LocalDate baseDateTo) {
+    String stringBaseDateFrom = TimeUtils.formatedTimeStringNonDashed(baseDateFrom);
+    String stringBaseDateTo = TimeUtils.formatedTimeStringNonDashed(baseDateTo);
     String encodedIndexName = URLEncoder.encode(indexName, StandardCharsets.UTF_8);
 
-    return UriComponentsBuilder.fromHttpUrl(BASE_URL)
+    return UriComponentsBuilder.fromUriString(BASE_URL)
         .queryParam("serviceKey", encodeServiceKey)
         .queryParam("resultType", "json")
         .queryParam("pageNo", 1)
         .queryParam("numOfRows", MAX_API_COUNT)
         .queryParam("idxNm", encodedIndexName)
-        .queryParam("beginBasDt", bastDateFrom)
-        .queryParam("endBasDt", baseDateTo)
+        .queryParam("beginBasDt", stringBaseDateFrom)
+        .queryParam("endBasDt", stringBaseDateTo)
         .build(true).toUri();
-  }
-
-  private List<IndexInfoCreateRequest> IndexInfoCreateFromResponse(
-      MarketIndexResponse indexResponse) {
-    return indexResponse.response().body().items().item().stream().map(IndexInfoCreateRequest::of)
-        .toList();
-  }
-
-  private List<IndexDataFromApi> IndexDataCreateFromResponse(
-      MarketIndexResponse indexResponse) {
-    return indexResponse.response().body().items().item().stream().map(IndexDataFromApi::of)
-        .toList();
   }
 }
