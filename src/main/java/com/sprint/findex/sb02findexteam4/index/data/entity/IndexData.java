@@ -1,7 +1,6 @@
 package com.sprint.findex.sb02findexteam4.index.data.entity;
 
 
-import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
 import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
@@ -17,9 +16,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,7 +30,8 @@ import lombok.NoArgsConstructor;
     })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class IndexData {
 
   @Id
@@ -42,7 +43,7 @@ public class IndexData {
   private IndexInfo indexInfo;
 
   @Column(name = "base_date", nullable = false)
-  private Instant baseDate;
+  private LocalDate baseDate;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "source_type", nullable = false)
@@ -104,33 +105,7 @@ public class IndexData {
         .equals(this.marketTotalAmount)) {
       this.marketTotalAmount = dto.marketTotalAmount();
     }
-
     return this;
-  }
-
-  private IndexData(IndexInfo indexInfo, Instant baseDate, SourceType sourceType,
-      BigDecimal marketPrice, BigDecimal closingPrice, BigDecimal highPrice, BigDecimal lowPrice,
-      BigDecimal versus, BigDecimal fluctuationRate, Long tradingQuantity, Long tradingPrice,
-      Long marketTotalAmount) {
-    this.indexInfo = indexInfo;
-    this.baseDate = baseDate;
-    this.sourceType = sourceType;
-    this.marketPrice = marketPrice;
-    this.closingPrice = closingPrice;
-    this.highPrice = highPrice;
-    this.lowPrice = lowPrice;
-    this.versus = versus;
-    this.fluctuationRate = fluctuationRate;
-    this.tradingQuantity = tradingQuantity;
-    this.tradingPrice = tradingPrice;
-    this.marketTotalAmount = marketTotalAmount;
-  }
-
-  public static IndexData from(IndexInfo indexInfo, IndexDataCreateCommand command) {
-    return new IndexData(indexInfo, command.baseDate(), command.sourceType(),
-        command.marketPrice(), command.closingPrice(), command.highPrice(),
-        command.lowPrice(), command.versus(), command.fluctuationRate(), command.tradingQuantity(),
-        command.tradingPrice(), command.marketTotalAmount());
   }
 
 

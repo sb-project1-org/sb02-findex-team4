@@ -1,6 +1,7 @@
 package com.sprint.findex.sb02findexteam4.sync.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import java.util.List;
 
 @Schema(description = "지수 데이터 연동 요청 DTO")
@@ -16,14 +17,14 @@ public record IndexDataSyncRequest(
         type = "string",
         format = "date"
     )
-    String baseDateFrom,
+    LocalDate baseDateFrom,
     @Schema(
         description = "대상 날짜 (까지)",
         example = "2025-04-27",
         type = "string",
         format = "date"
     )
-    String baseDateTo
+    LocalDate baseDateTo
 ) {
 
 }

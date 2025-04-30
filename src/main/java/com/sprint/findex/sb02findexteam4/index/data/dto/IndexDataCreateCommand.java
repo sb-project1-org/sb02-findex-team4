@@ -2,15 +2,14 @@ package com.sprint.findex.sb02findexteam4.index.data.dto;
 
 import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import com.sprint.findex.sb02findexteam4.sync.dto.api.IndexDataFromApi;
-import com.sprint.findex.sb02findexteam4.util.TimeUtils;
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDate;
 import lombok.Builder;
 
 @Builder
 public record IndexDataCreateCommand(
     Long indexInfoId,
-    Instant baseDate,
+    LocalDate baseDate,
     BigDecimal marketPrice,
     BigDecimal closingPrice,
     BigDecimal highPrice,
@@ -27,7 +26,7 @@ public record IndexDataCreateCommand(
       SourceType sourceType) {
     return IndexDataCreateCommand.builder()
         .indexInfoId(request.indexInfoId())
-        .baseDate(TimeUtils.formatedTimeInstant(request.baseDate()))
+        .baseDate(request.baseDate())
         .marketPrice(request.marketPrice())
         .closingPrice(request.closingPrice())
         .highPrice(request.highPrice())

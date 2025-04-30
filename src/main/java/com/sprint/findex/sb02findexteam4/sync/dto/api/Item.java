@@ -1,11 +1,15 @@
 package com.sprint.findex.sb02findexteam4.sync.dto.api;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public record Item(
-    String basPntm,
+    @JsonFormat(pattern = "yyyyMMdd")
+    LocalDate basPntm,
     String basIdx,
-    String basDt,
+    @JsonFormat(pattern = "yyyyMMdd")
+    LocalDate basDt,
     String idxCsf,
     String idxNm,
     Integer epyItmsCnt,

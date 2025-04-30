@@ -1,15 +1,14 @@
 package com.sprint.findex.sb02findexteam4.sync.dto.api;
 
-import com.sprint.findex.sb02findexteam4.util.TimeUtils;
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDate;
 import lombok.Builder;
 
 @Builder
 public record IndexDataFromApi(
     String indexClassification,
     String indexName,
-    Instant baseDate,
+    LocalDate baseDate,
     BigDecimal marketPrice,
     BigDecimal closingPrice,
     BigDecimal highPrice,
@@ -25,7 +24,7 @@ public record IndexDataFromApi(
     return IndexDataFromApi.builder()
         .indexClassification(item.idxCsf())
         .indexName(item.idxNm())
-        .baseDate(TimeUtils.formatedTimeInstantFromApi(item.basDt()))
+        .baseDate(item.basDt())
         .marketPrice(item.mkp())
         .closingPrice(item.clpr())
         .highPrice(item.hipr())

@@ -3,18 +3,15 @@ package com.sprint.findex.sb02findexteam4.index.data.controller;
 
 import com.sprint.findex.sb02findexteam4.index.data.dto.CursorPageResponseIndexDataDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexChartDto;
-import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateRequest;
-import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataFindCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCsvExportCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataSearchCondition;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexPerformanceDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.RankedIndexPerformanceDto;
 import com.sprint.findex.sb02findexteam4.index.data.entity.PeriodType;
 import com.sprint.findex.sb02findexteam4.index.data.service.IndexDataService;
-import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
-import com.sprint.findex.sb02findexteam4.swagger.IndexDataApi;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -34,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/index-data")
-public class IndexDataController implements IndexDataApi {
+public class IndexDataController {
 
   private final IndexDataService indexDataService;
 
@@ -42,8 +39,7 @@ public class IndexDataController implements IndexDataApi {
   public ResponseEntity<IndexDataResponse> createIndexData(
       @RequestBody IndexDataCreateRequest request) {
 
-    IndexDataResponse createdIndexData = indexDataService.create(
-        IndexDataCreateCommand.fromUser(request, SourceType.USER));
+    IndexDataResponse createdIndexData = indexDataService.create(request);
 
     return ResponseEntity.status(HttpStatus.CREATED).body(createdIndexData);
   }
@@ -57,18 +53,7 @@ public class IndexDataController implements IndexDataApi {
 
   @GetMapping
   public ResponseEntity<CursorPageResponseIndexDataDto> getIndexDataList(
-      @RequestParam(required = false) Long indexInfoId,
-      @RequestParam(required = false) String startDate,
-      @RequestParam(required = false) String endDate,
-      @RequestParam(required = false) Long idAfter,
-      @RequestParam(required = false) String cursor,
-      @RequestParam(defaultValue = "baseDate") String sortField,
-      @RequestParam(defaultValue = "desc") String sortDirection,
-      @RequestParam(defaultValue = "10") int size
-  ) {
-    IndexDataFindCommand command = new IndexDataFindCommand(
-        indexInfoId, startDate, endDate, idAfter, cursor, sortField, sortDirection, size
-    );
+      IndexDataSearchCondition command) {
     return ResponseEntity.ok(indexDataService.getIndexDataList(command));
   }
 
@@ -100,21 +85,7 @@ public class IndexDataController implements IndexDataApi {
   }
 
   @GetMapping("/export/csv")
-  public ResponseEntity<byte[]> exportCsv(
-      @RequestParam(required = false) Long indexInfoId,
-      @RequestParam(required = false) String startDate,
-      @RequestParam(required = false) String endDate,
-      @RequestParam(defaultValue = "baseDate") String sortField,
-      @RequestParam(defaultValue = "desc") String sortDirection
-  ) {
-    IndexDataCsvExportCommand command = IndexDataCsvExportCommand.builder()
-        .indexInfoId(indexInfoId)
-        .startDate(startDate)
-        .endDate(endDate)
-        .sortField(sortField)
-        .sortDirection(sortDirection)
-        .build();
-
+  public ResponseEntity<byte[]> exportCsv(IndexDataCsvExportCommand command) {
     byte[] csvData = indexDataService.exportCsv(command);
 
     return ResponseEntity.ok()

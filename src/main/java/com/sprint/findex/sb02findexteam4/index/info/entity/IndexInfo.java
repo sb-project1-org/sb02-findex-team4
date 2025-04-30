@@ -16,7 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -48,7 +48,7 @@ public class IndexInfo {
   private Integer employedItemsCount;
 
   @Column(name = "base_point_in_time", nullable = false)
-  private Instant basePointInTime;
+  private LocalDate basePointInTime;
 
   @Column(name = "base_index", nullable = false)
   private Double baseIndex;

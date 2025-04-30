@@ -1,12 +1,13 @@
 package com.sprint.findex.sb02findexteam4.index.data.dto;
 
-import lombok.Builder;
+import java.time.LocalDate;
 
-@Builder
 public record IndexDataCsvExportCommand(
     Long indexInfoId,
-    String startDate,
-    String endDate,
+    LocalDate startDate,
+    LocalDate endDate,
     String sortField,
     String sortDirection
-) {}
+) {
+
+}

@@ -1,6 +1,7 @@
 package com.sprint.findex.sb02findexteam4.index.info.dto;
 
 import com.sprint.findex.sb02findexteam4.sync.dto.api.Item;
+import java.time.LocalDate;
 import lombok.Builder;
 
 @Builder
@@ -8,7 +9,7 @@ public record IndexInfoCreateRequest(
     String indexClassification,
     String indexName,
     Integer employedItemsCount,
-    String basePointInTime,
+    LocalDate basePointInTime,
     Double baseIndex,
     Boolean favorite
 ) {
