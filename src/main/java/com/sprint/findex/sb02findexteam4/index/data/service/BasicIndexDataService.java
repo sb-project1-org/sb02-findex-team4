@@ -52,7 +52,7 @@ public class BasicIndexDataService implements IndexDataService {
 
   private final IndexDataRepository indexDataRepository;
   private final IndexInfoRepository indexInfoRepository;
-  private final IndexDataMapper mapper;
+  private final IndexDataMapper indexDataMapper;
 
   static final int MA5DATA_NUM = 5;
   static final int MA20DATA_NUM = 20;
@@ -65,11 +65,11 @@ public class BasicIndexDataService implements IndexDataService {
 
     isDuplicated(indexInfo.getId(), request.baseDate());
 
-    IndexData newIndexData = mapper.toEntity(request, indexInfo, SourceType.USER);
+    IndexData newIndexData = indexDataMapper.toEntity(request, indexInfo, SourceType.USER);
     IndexData savedIndexData = indexDataRepository.save(newIndexData);
 
     log.info("[BasicIndexDataService] Method create - {} ", newIndexData.getId());
-    return mapper.toResponse(savedIndexData);
+    return indexDataMapper.toResponse(savedIndexData);
   }
 
   @Transactional
@@ -79,7 +79,7 @@ public class BasicIndexDataService implements IndexDataService {
         .orElseThrow(() -> new NotFoundException(INDEX_DATA_NOT_FOUND));
 
     IndexData savedIndexData = indexDataRepository.save(indexData.update(request));
-    return mapper.toResponse(savedIndexData);
+    return indexDataMapper.toResponse(savedIndexData);
   }
 
   @Transactional(readOnly = true)
