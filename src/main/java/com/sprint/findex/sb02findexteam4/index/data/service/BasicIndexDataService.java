@@ -9,18 +9,20 @@ import com.sprint.findex.sb02findexteam4.exception.NotFoundException;
 import com.sprint.findex.sb02findexteam4.index.data.dto.ChartPoint;
 import com.sprint.findex.sb02findexteam4.index.data.dto.CursorPageResponseIndexDataDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexChartDto;
-import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateCommand;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCreateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataCsvExportCommand;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataDto;
-import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataFindCommand;
+import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataSearchCondition;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataResponse;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexDataUpdateRequest;
 import com.sprint.findex.sb02findexteam4.index.data.dto.IndexPerformanceDto;
 import com.sprint.findex.sb02findexteam4.index.data.dto.RankedIndexPerformanceDto;
 import com.sprint.findex.sb02findexteam4.index.data.entity.IndexData;
 import com.sprint.findex.sb02findexteam4.index.data.entity.PeriodType;
+import com.sprint.findex.sb02findexteam4.index.data.mapper.IndexDataMapper;
 import com.sprint.findex.sb02findexteam4.index.data.repository.IndexDataRepository;
 import com.sprint.findex.sb02findexteam4.index.info.entity.IndexInfo;
+import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
 import com.sprint.findex.sb02findexteam4.index.info.repository.IndexInfoRepository;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
@@ -50,24 +52,24 @@ public class BasicIndexDataService implements IndexDataService {
 
   private final IndexDataRepository indexDataRepository;
   private final IndexInfoRepository indexInfoRepository;
+  private final IndexDataMapper mapper;
 
   static final int MA5DATA_NUM = 5;
   static final int MA20DATA_NUM = 20;
 
   @Transactional
   @Override
-  public IndexDataResponse create(IndexDataCreateCommand command) {
-    IndexInfo indexInfo = indexInfoRepository.findById(command.indexInfoId())
+  public IndexDataResponse create(IndexDataCreateRequest request) {
+    IndexInfo indexInfo = indexInfoRepository.findById(request.indexInfoId())
         .orElseThrow(() -> new NotFoundException(INDEX_INFO_NOT_FOUND));
 
-    if (isDuplicated(command.indexInfoId(), command.baseDate())) {
-      throw new AlreadyExistsException(INDEX_DATA_ALREADY_EXISTS);
-    }
+    isDuplicated(indexInfo.getId(), request.baseDate());
 
-    IndexData indexData = IndexData.from(indexInfo, command);
-    IndexData createdIndexData = indexDataRepository.save(indexData);
-    log.info("[BasicIndexDataService] Method create - {} ", indexData.getId());
-    return IndexDataResponse.from(createdIndexData);
+    IndexData newIndexData = mapper.toEntity(request, indexInfo, SourceType.USER);
+    IndexData savedIndexData = indexDataRepository.save(newIndexData);
+
+    log.info("[BasicIndexDataService] Method create - {} ", newIndexData.getId());
+    return mapper.toResponse(savedIndexData);
   }
 
   @Transactional
@@ -76,13 +78,13 @@ public class BasicIndexDataService implements IndexDataService {
     IndexData indexData = indexDataRepository.findById(id)
         .orElseThrow(() -> new NotFoundException(INDEX_DATA_NOT_FOUND));
 
-    IndexData createdIndexData = indexDataRepository.save(indexData.update(request));
-    return IndexDataResponse.from(createdIndexData);
+    IndexData savedIndexData = indexDataRepository.save(indexData.update(request));
+    return mapper.toResponse(savedIndexData);
   }
 
   @Transactional(readOnly = true)
   @Override
-  public CursorPageResponseIndexDataDto getIndexDataList(IndexDataFindCommand command) {
+  public CursorPageResponseIndexDataDto getIndexDataList(IndexDataSearchCondition command) {
     List<IndexData> result = indexDataRepository.findWithConditions(command);
     boolean hasNext = result.size() > command.size();
     if (hasNext) {
@@ -95,7 +97,6 @@ public class BasicIndexDataService implements IndexDataService {
 
     Long nextIdAfter = contents.isEmpty() ? null : contents.get(contents.size() - 1).id();
     String nextCursor = nextIdAfter != null ? nextIdAfter.toString() : null;
-
     Long totalElements = indexDataRepository.countWithConditions(command);
 
     return new CursorPageResponseIndexDataDto(
@@ -264,9 +265,10 @@ public class BasicIndexDataService implements IndexDataService {
     return result;
   }
 
-  @Override
-  public boolean isDuplicated(Long indexInfoId, Instant baseDate) {
-    return indexDataRepository.existsByIndexInfoIdAndBaseDate(indexInfoId, baseDate);
+  private void isDuplicated(Long indexInfoId, LocalDate baseDate) {
+    if (indexDataRepository.existsByIndexInfoIdAndBaseDate(indexInfoId, baseDate)) {
+      throw new AlreadyExistsException(INDEX_DATA_ALREADY_EXISTS);
+    }
   }
 
   private LocalDate calculateBaseDate(PeriodType periodType) {

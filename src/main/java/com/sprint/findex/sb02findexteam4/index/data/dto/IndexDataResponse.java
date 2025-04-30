@@ -1,8 +1,6 @@
 package com.sprint.findex.sb02findexteam4.index.data.dto;
 
-import com.sprint.findex.sb02findexteam4.index.data.entity.IndexData;
 import com.sprint.findex.sb02findexteam4.index.info.entity.SourceType;
-import com.sprint.findex.sb02findexteam4.util.TimeUtils;
 import java.math.BigDecimal;
 
 public record IndexDataResponse(
@@ -20,23 +18,5 @@ public record IndexDataResponse(
     Long tradingPrice,
     Long marketTotalAmount
 ) {
-  public static IndexDataResponse from(IndexData entity) {
-    String string = TimeUtils.formatedTimeString(entity.getBaseDate());
 
-    return new IndexDataResponse(
-        entity.getId(),
-        entity.getIndexInfo().getId(),
-        string,
-        entity.getSourceType(),
-        entity.getMarketPrice(),
-        entity.getClosingPrice(),
-        entity.getHighPrice(),
-        entity.getLowPrice(),
-        entity.getVersus(),
-        entity.getFluctuationRate(),
-        entity.getTradingQuantity(),
-        entity.getTradingPrice(),
-        entity.getMarketTotalAmount()
-    );
-  }
 }

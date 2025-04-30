@@ -14,7 +14,7 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
 
   Optional<IndexData> findTopByIndexInfoIdOrderByBaseDateDesc(Long id);
 
-  boolean existsByIndexInfoIdAndBaseDate(Long indexInfoId, Instant baseDate);
+  boolean existsByIndexInfoIdAndBaseDate(Long indexInfoId, LocalDate baseDate);
 
   Optional<IndexData> findByIndexInfoIdAndBaseDate(Long indexInfoId, Instant today);
 
